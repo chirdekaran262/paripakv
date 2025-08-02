@@ -63,7 +63,7 @@ export default function ProductDetails() {
             }
 
             try {
-                const productRes = await axios.get(`http://localhost:8089/listings/byId`, {
+                const productRes = await axios.get(`${import.meta.env.VITE_API_URL}/listings/byId`, {
                     params: { id },
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -71,7 +71,7 @@ export default function ProductDetails() {
                 const productData = productRes.data;
                 setProduct(productData);
 
-                const userRes = await axios.get(`http://localhost:8089/users/productDetails`, {
+                const userRes = await axios.get(`${import.meta.env.VITE_API_URL}/users/productDetails`, {
                     params: { id: productData.farmerId },
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -117,7 +117,7 @@ export default function ProductDetails() {
         };
 
         try {
-            const response = await axios.post("http://localhost:8089/orders", orderPayload, {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/orders`, orderPayload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -143,7 +143,7 @@ export default function ProductDetails() {
 
         try {
             await axios.put(
-                `http://localhost:8089/users/${userId}/address`,
+                `${import.meta.env.VITE_API_URL}/users/${userId}/address`,
                 { address: deliveryAddress },
                 {
                     headers: {

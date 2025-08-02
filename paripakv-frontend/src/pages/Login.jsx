@@ -14,7 +14,7 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://localhost:8089/users/login', { email, password });
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/users/login`, { email, password });
             // Check if token exists in response
             if (!res.data) {
                 throw new Error('Token not received from server');
@@ -27,8 +27,7 @@ export default function Login() {
         }
     };
     const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:8089/oauth2/authorization/google';
-        console.log(window.location.href);
+        window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`;
     };
     return (
         <div className="min-h-screen bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300 flex flex-col relative overflow-hidden">

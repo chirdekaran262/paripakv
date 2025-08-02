@@ -33,7 +33,7 @@ export default function TransporterOrderFeed() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/orders/transporter/feed`, {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/orders/transporter/feed`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const pendingOrders = res.data.filter(
@@ -53,7 +53,7 @@ export default function TransporterOrderFeed() {
 
       const listingPromises = uniqueListingIds.map(async (listingId) => {
         try {
-          const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/listings/byId?id=${listingId}`, {
+          const res = await axios.get(`${import.meta.env.VITE_API_URL}/listings/byId?id=${listingId}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           return { id: listingId, data: res.data };
@@ -80,7 +80,7 @@ export default function TransporterOrderFeed() {
       const uniqueFarmerIds = [...new Set(farmerIds)];
       const farmerPromises = uniqueFarmerIds.map(async (farmerId) => {
         try {
-          const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/productDetails?id=${farmerId}`, {
+          const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/productDetails?id=${farmerId}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           return { id: farmerId, data: res.data };
@@ -130,7 +130,7 @@ export default function TransporterOrderFeed() {
     setAcceptingOrder(orderId);
     try {
       await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/orders/transporter/orders/${orderId}/pickup?transporterId=${userId}`,
+        `${import.meta.env.VITE_API_URL}/orders/transporter/orders/${orderId}/pickup?transporterId=${userId}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },

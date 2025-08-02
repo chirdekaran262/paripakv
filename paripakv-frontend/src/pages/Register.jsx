@@ -29,7 +29,7 @@ export default function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/users/register`, formData);
+            await axios.post(`${import.meta.env.VITE_API_URL}/users/register`, formData);
             alert('Registration successful!');
             navigate('/login');
         } catch (err) {
@@ -38,7 +38,7 @@ export default function Register() {
     };
 
     const handleGoogleLogin = () => {
-        window.location.href = `${process.env.REACT_APP_BACKEND_URL}/oauth2/authorization/google`;
+        window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`;
         console.log(window.location.href);
     };
 

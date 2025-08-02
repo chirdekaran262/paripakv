@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
         console.log('AuthProvider token:', token);
         if (token) {
             setIsAuthenticated(true);
-            axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/profile`, {
+            axios.get(`${import.meta.env.VITE_API_URL}/users/profile`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

@@ -28,7 +28,7 @@ export default function ProductListingList() {
                 if (filters.village) params.append('village', filters.village);
                 if (filters.name) params.append('name', filters.name);
 
-                const url = `${process.env.REACT_APP_BACKEND_URL}/listings${params.toString() ? `?${params.toString()}` : ''}`;
+                const url = `${import.meta.env.VITE_API_URL}/listings${params.toString() ? `?${params.toString()}` : ''}`;
                 const response = await axios.get(url, {
                     headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                 });

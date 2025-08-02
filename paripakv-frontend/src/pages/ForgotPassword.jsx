@@ -12,7 +12,7 @@ export default function ForgotPassword() {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await axios.post('http://localhost:8089/users/forgot-password', { email });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/forgot-password`, { email });
             setMessage(response.data);
         } catch (err) {
             setMessage(err.response?.data || 'An error occurred');
@@ -57,8 +57,8 @@ export default function ForgotPassword() {
                     {/* Enhanced alert message styling */}
                     {message && (
                         <div className={`p-4 rounded-xl mb-6 backdrop-blur-sm border transition-all duration-300 ${message.includes('sent') || message.includes('success')
-                                ? 'bg-green-100/80 text-green-800 border-green-300/50 shadow-sm'
-                                : 'bg-red-100/80 text-red-800 border-red-300/50 shadow-sm'
+                            ? 'bg-green-100/80 text-green-800 border-green-300/50 shadow-sm'
+                            : 'bg-red-100/80 text-red-800 border-red-300/50 shadow-sm'
                             }`}>
                             <div className="flex items-center gap-2">
                                 {message.includes('sent') || message.includes('success') ? (

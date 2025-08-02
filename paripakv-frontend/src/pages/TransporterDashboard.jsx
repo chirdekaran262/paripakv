@@ -74,7 +74,7 @@ export default function TransporterDashboard() {
         if (buyerDetails[buyerId]) return buyerDetails[buyerId];
 
         try {
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/productDetails?id=${buyerId}`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/productDetails?id=${buyerId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setBuyerDetails(prev => ({ ...prev, [buyerId]: response.data }));
@@ -90,7 +90,7 @@ export default function TransporterDashboard() {
         if (productDetails[listingId]) return productDetails[listingId];
 
         try {
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/listings/byId?id=${listingId}`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/listings/byId?id=${listingId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setProductDetails(prev => ({ ...prev, [listingId]: response.data }));
@@ -106,7 +106,7 @@ export default function TransporterDashboard() {
         if (farmerDetails[farmerId]) return farmerDetails[farmerId];
 
         try {
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/productDetails?id=${farmerId}`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/productDetails?id=${farmerId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setFarmerDetails(prev => ({ ...prev, [farmerId]: response.data }));
@@ -120,7 +120,7 @@ export default function TransporterDashboard() {
     // Enhanced fetch orders with related data
     const fetchOrders = useCallback(async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/orders/transporter/getOrder`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/orders/transporter/getOrder`, {
                 params: { transporterId: userId },
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -209,7 +209,7 @@ export default function TransporterDashboard() {
         try {
             showNotification("Processing pickup request...", "info");
 
-            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/orders/transporter/${orderId}/pickup?transporterId=${userId}`, {}, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/orders/transporter/${orderId}/pickup?transporterId=${userId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -234,7 +234,7 @@ export default function TransporterDashboard() {
         try {
             showNotification("Processing delivery...", "info");
 
-            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/orders/transporter/${orderId}/deliver`, {}, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/orders/transporter/${orderId}/deliver`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -273,7 +273,7 @@ export default function TransporterDashboard() {
             try {
                 showNotification("Updating order status...", "info");
 
-                await axios.put(`${process.env.REACT_APP_BACKEND_URL}/orders/transporter/${orderId}/inTransit`, {}, {
+                await axios.put(`${import.meta.env.VITE_API_URL}/orders/transporter/${orderId}/inTransit`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -299,7 +299,7 @@ export default function TransporterDashboard() {
             formData.append('proof', file);
             formData.append('orderId', orderId);
 
-            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/orders/${orderId}/proof`, formData, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/orders/${orderId}/proof`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'

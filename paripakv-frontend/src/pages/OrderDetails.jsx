@@ -49,16 +49,16 @@ export default function OrderDetails() {
         try {
             if (showRefreshing) setRefreshing(true);
 
-            const orderRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/orders/getById?id=${id}`, {
+            const orderRes = await axios.get(`${import.meta.env.VITE_API_URL}/orders/getById?id=${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setOrder(orderRes.data);
 
             const [buyerRes, productRes] = await Promise.all([
-                axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/productDetails?id=${orderRes.data.buyerId}`, {
+                axios.get(`${import.meta.env.VITE_API_URL}/users/productDetails?id=${orderRes.data.buyerId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 }),
-                axios.get(`${process.env.REACT_APP_BACKEND_URL}/listings/byId?id=${orderRes.data.listingId}`, {
+                axios.get(`${import.meta.env.VITE_API_URL}/listings/byId?id=${orderRes.data.listingId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
             ]);
@@ -81,7 +81,7 @@ export default function OrderDetails() {
         setStatusUpdating(true);
         setStatusMessage(null);
 
-        axios.patch(`${process.env.REACT_APP_BACKEND_URL}/orders/${id}/status?status=${newStatus}&quantity=${quantityKg}`, {}, {
+        axios.patch(`${import.meta.env.VITE_API_URL}/orders/${id}/status?status=${newStatus}&quantity=${quantityKg}`, {}, {
             headers: { Authorization: `Bearer ${token}` }
         }).then((res) => {
             setOrder((prev) => ({ ...prev, status: res.data.status }));

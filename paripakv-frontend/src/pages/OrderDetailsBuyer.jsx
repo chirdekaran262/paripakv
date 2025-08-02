@@ -48,25 +48,25 @@ export default function OrderDetailsBuyer() {
             if (showRefreshing) setRefreshing(true);
             setError(null);
 
-            const orderRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/orders/getById?id=${id}`, {
+            const orderRes = await axios.get(`${import.meta.env.VITE_API_URL}/orders/getById?id=${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const orderData = orderRes.data;
             setOrder(orderData);
 
-            const listingRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/listings/byId?id=${orderData.listingId}`, {
+            const listingRes = await axios.get(`${import.meta.env.VITE_API_URL}/listings/byId?id=${orderData.listingId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const listingData = listingRes.data;
             setListing(listingData);
 
-            const farmerRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/productDetails?id=${listingData.farmerId}`, {
+            const farmerRes = await axios.get(`${import.meta.env.VITE_API_URL}/users/productDetails?id=${listingData.farmerId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setFarmer(farmerRes.data);
 
             if (orderData.transporterId) {
-                const transporterRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/productDetails?id=${orderData.transporterId}`, {
+                const transporterRes = await axios.get(`${import.meta.env.VITE_API_URL}/users/productDetails?id=${orderData.transporterId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setTransporter(transporterRes.data);

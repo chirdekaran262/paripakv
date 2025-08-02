@@ -46,7 +46,7 @@ export default function ManageOrders() {
             if (showRefreshing) setRefreshing(true);
             setError(null);
 
-            const response = await axios.get("http://localhost:8089/orders/farmerOrders", {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/orders/farmerOrders`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

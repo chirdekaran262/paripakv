@@ -11,7 +11,7 @@ export default function OrderForm({ productId }) {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post('http://localhost:8080/orders', {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/orders`, {
                 productId,
                 quantity,
                 villageName

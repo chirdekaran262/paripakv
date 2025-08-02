@@ -28,13 +28,13 @@ export default function Profile() {
                 setLoading(true);
                 setError('');
 
-                const { data: userData } = await axios.get('http://localhost:8089/users/profile', {
+                const { data: userData } = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/profile`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUser(userData);
 
                 if (userData.role === 'FARMER') {
-                    const { data: listings } = await axios.get('http://localhost:8089/listings/farmer', {
+                    const { data: listings } = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/listings/farmer`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
 
@@ -63,7 +63,7 @@ export default function Profile() {
     const handleDeleteListing = async (id) => {
         const token = Cookies.get('token');
         try {
-            await axios.delete(`http://localhost:8089/listings/${id}`, {
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/listings/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setUserListings((prev) => prev.filter((l) => l.id !== id));

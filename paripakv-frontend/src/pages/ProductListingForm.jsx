@@ -82,7 +82,7 @@ export default function ProductListingForm() {
         const token = Cookies.get("token");
 
         try {
-            await axios.post("http://localhost:8089/listings", listing, {
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/listings`, listing, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

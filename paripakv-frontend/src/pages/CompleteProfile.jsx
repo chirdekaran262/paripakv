@@ -33,7 +33,7 @@ export default function CompleteProfile() {
 
         console.log('Submitting profile with token:', token);
         try {
-            await axios.put('http://localhost:8089/users/complete-profile', formData, {
+            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/users/complete-profile`, formData, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 

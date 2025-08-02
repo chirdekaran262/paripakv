@@ -36,7 +36,7 @@ export default function BuyerOrders() {
             if (showRefreshing) setRefreshing(true);
             setError(null);
 
-            const response = await axios.get(`http://localhost:8089/orders/buyer/${buyerId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/orders/buyer/${buyerId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setOrders(response.data);

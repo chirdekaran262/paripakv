@@ -61,11 +61,11 @@ public class UserController {
         Users user = userService.findOrRegisterOAuthUser(email, name);
         String token = jwtUtil.generateToken(user.getEmail());
         if(!user.isProfileCompleted()) {
-            response.sendRedirect("http://localhost:5173/complete-profile?token=" + token);
+            response.sendRedirect("https://paripakv-f.onrender.com/complete-profile?token=" + token);
         }
         // Redirect to frontend with token in URL
         else {
-            String redirectUrl = "http://localhost:5173/oauth2/redirect?token=" + token;
+            String redirectUrl = "https://paripakv-f.onrender.com/oauth2/redirect?token=" + token;
             response.sendRedirect(redirectUrl);
         }
     }
@@ -102,7 +102,7 @@ public class UserController {
     @GetMapping("/reset-password")
     public void handleResetPasswordRedirect(@RequestParam String token, HttpServletResponse response) throws IOException {
         // Optional: Validate token here if needed
-        response.sendRedirect("http://localhost:5173/reset-password?token=" + token);
+        response.sendRedirect("https://paripakv-f.onrender.com/reset-password?token=" + token);
     }
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request) {

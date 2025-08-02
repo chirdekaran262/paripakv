@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/transport")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class TransportScheduleController {
 
     private final TransportScheduleService service;

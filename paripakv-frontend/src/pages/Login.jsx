@@ -14,7 +14,7 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/users/login`, { email, password });
+            const res = await axios.post(`https://paripakv.onrender.com/users/login`, { email, password });
             // Check if token exists in response
             if (!res.data) {
                 throw new Error('Token not received from server');

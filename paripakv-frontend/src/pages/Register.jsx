@@ -29,7 +29,8 @@ export default function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/users/register`, formData);
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/register`, formData);
+            console.log(response.data);
             alert('Registration successful!');
             navigate('/login');
         } catch (err) {

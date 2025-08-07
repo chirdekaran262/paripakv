@@ -1,17 +1,22 @@
 package com.FarmTech.paripakv.controller;
 
 import com.FarmTech.paripakv.model.ProductListing;
+import com.FarmTech.paripakv.dto.ProductListingDTO;
 import com.FarmTech.paripakv.service.ProductListingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -20,18 +25,20 @@ import java.util.UUID;
 public class ProductListingController {
 
     private final ProductListingService service;
-
     public ProductListingController(ProductListingService service) {
         this.service = service;
     }
 
     @PostMapping
     @PreAuthorize("hasRole('FARMER')")
-    public ResponseEntity<ProductListing> createListing(@RequestBody ProductListing listing, Authentication auth) {
-        String email = auth.getName();
-        ProductListing createdListing = service.save(listing, email);
-        return new ResponseEntity<>(createdListing, HttpStatus.CREATED); // 201 Created
+    public ResponseEntity<?> createListing(@RequestBody ProductListingDTO listing, Authentication auth) {
+        try {
+            return new ResponseEntity<>(service.saveWithUrls(listing, auth), HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
     }
+
 
 
     @GetMapping
@@ -67,4 +74,23 @@ public class ProductListingController {
 
         return new ResponseEntity<>(productListing,HttpStatus.OK);
     }
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            String folderPath = "uploads/";
+            File uploadDir = new File(folderPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get(folderPath + fileName);
+            Files.write(filePath, file.getBytes());
+
+            String imageUrl = "/uploads/" + fileName; // Publicly accessible via static path
+            return ResponseEntity.ok(imageUrl);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed");
+        }
+    }
+
 }

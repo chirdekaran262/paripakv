@@ -1,4 +1,4 @@
-package com.FarmTech.paripakv.model;
+package com.FarmTech.paripakv.dto;
 
 import lombok.Data;
 

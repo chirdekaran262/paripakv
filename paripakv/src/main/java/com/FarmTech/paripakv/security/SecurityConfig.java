@@ -15,6 +15,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 import java.util.List;
 
 @Configuration
@@ -35,6 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/users/register", "/users/login", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/users/forgot-password").permitAll()
+                        .requestMatchers("/uploads/*").permitAll()
                         .requestMatchers("/users/reset-password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/listings", "/listings/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/listings").hasRole("FARMER")
@@ -60,7 +64,15 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
+    @Configuration
+    public class WebConfig implements WebMvcConfigurer {
+        @Override
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+            registry
+                    .addResourceHandler("/uploads/**")
+                    .addResourceLocations("file:uploads/");
+        }
+    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

@@ -17,7 +17,7 @@ export default function ProductListingList() {
     const [filters, setFilters] = useState({ village: '', name: '' });
     const [imageErrorMap, setImageErrorMap] = useState({});
     const [favorites, setFavorites] = useState(new Set());
-
+    const baseUrl = "http://localhost:8089"
     useEffect(() => {
         const fetchListings = async () => {
             try {
@@ -278,7 +278,7 @@ export default function ProductListingList() {
                                                 </div>
                                             ) : (
                                                 <img
-                                                    src={item.imageUrl || "./assets/vegetable.png"}
+                                                    src={item.images?.[0]?.imageUrl ? `${baseUrl}${item.images[0].imageUrl}` : "./assets/vegetable.png"}
                                                     alt={item.name}
                                                     onError={() => handleImageError(item.id)}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

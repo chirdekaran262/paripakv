@@ -21,7 +21,7 @@ export default function ProductListingForm() {
         quantityKg: "",
         pricePerKg: "",
         villageName: "",
-        AvailableDate: ""
+        availableDate: ""
     });
 
     const [suggestions, setSuggestions] = useState([]);
@@ -29,7 +29,7 @@ export default function ProductListingForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [locationLoading, setLocationLoading] = useState(false);
     const navigate = useNavigate();
-
+    const [images, setImages] = useState([]);
     // Popular crop suggestions
     const popularCrops = [
         "🌾 Wheat", "🌽 Corn", "🍅 Tomato", "🥔 Potato", "🧅 Onion",
@@ -38,67 +38,178 @@ export default function ProductListingForm() {
 
     const handleChange = async (e) => {
         const { name, value } = e.target;
-        setListing((prev) => ({ ...prev, [name]: value }));
 
+        // Update form data
+        setListing((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+
+        // Handle location suggestions for villageName
         if (name === "villageName" && value.length > 2) {
             setLocationLoading(true);
             try {
                 const res = await axios.get("https://api.opencagedata.com/geocode/v1/json", {
                     params: {
-                        key: "53cb118d16df41d0b048e5c954f567bb",
+                        key: "53cb118d16df41d0b048e5c954f567bb", // Use your own API key
                         q: value,
                         limit: 5,
                         countrycode: "in",
                         language: "en"
                     }
                 });
+
                 const villageSuggestions = res.data.results.map(result => result.formatted);
                 setSuggestions(villageSuggestions);
                 setShowSuggestions(true);
-            } catch (err) {
-                console.error("Location fetch error:", err);
+            } catch (error) {
+                console.error("Location fetch error:", error);
                 setSuggestions([]);
                 setShowSuggestions(false);
             } finally {
                 setLocationLoading(false);
             }
         }
+
+        // Hide suggestions if input is too short
+        if (name === "villageName" && value.length <= 2) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+        }
     };
+
 
     const handleSuggestionClick = (suggestion) => {
         setListing((prev) => ({ ...prev, villageName: suggestion }));
         setSuggestions([]);
         setShowSuggestions(false);
     };
+    const handleRemoveImage = (index) => {
+        setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    };
+
+    const handleImageChange = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+        setImages((prevImages) => {
+            const total = [...prevImages, ...selectedFiles];
+            return total.slice(0, 5); // Limit max 5 images
+        });
+    }
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!images || images.length === 0) {
+            alert("📸 Please upload at least one image.");
+            return;
+        }
+
+        if (!listing || Object.keys(listing).length === 0) {
+            alert("⚠️ Listing details are missing.");
+            return;
+        }
+
+        const token = Cookies.get("token");
+        if (!token) {
+            alert("🔒 You are not authenticated. Please login first.");
+            return;
+        }
+
+        setIsLoading(true);
+
+        try {
+            const uploadedImageUrls = [];
+
+            // Upload each image one by one
+            for (const image of images) {
+                const formData = new FormData();
+                formData.append("file", image);
+
+                const res = await axios.post(
+                    `${import.meta.env.VITE_API_URL}/listings/upload`,
+                    formData,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                );
+
+                if (res.status === 200 && res.data) {
+                    uploadedImageUrls.push(res.data); // assuming it returns a string URL
+                } else {
+                    throw new Error("Failed to upload image");
+                }
+            }
+
+            // Construct the DTO payload
+            const payload = {
+                name: listing.name,
+                quantityKg: Number(listing.quantityKg),
+                pricePerKg: Number(listing.pricePerKg),
+                villageName: listing.villageName,
+                availableDate: listing.availableDate,
+                imageUrls: uploadedImageUrls,
+            };
+            console.log(payload)
+            // Send listing data to backend
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/listings`,
+                payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (response.status === 201) {
+                alert("✅ Listing Created Successfully!");
+                navigate("/");
+            } else {
+                alert("❌ Failed to create listing.");
+            }
+        } catch (error) {
+            console.error("Error uploading images or creating listing", error);
+            alert(error.response?.data?.message || "❌ Something went wrong.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
 
     const handleCropSuggestionClick = (crop) => {
         const cleanCrop = crop.split(' ').slice(1).join(' '); // Remove emoji
         setListing((prev) => ({ ...prev, name: cleanCrop }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        const token = Cookies.get("token");
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     setIsLoading(true);
+    //     const token = Cookies.get("token");
 
-        try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/listings`, listing, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+    //     try {
+    //         await axios.post(`${import.meta.env.VITE_API_URL}/listings`, listing, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         });
 
-            // Success animation delay
-            setTimeout(() => {
-                alert("✅ Listing Created Successfully!");
-                navigate("/");
-            }, 1000);
-        } catch (error) {
-            console.error("Failed to create listing", error);
-            alert(error.response?.data?.message || "❌ Failed to create listing");
-            setIsLoading(false);
-        }
-    };
+    //         // Success animation delay
+    //         setTimeout(() => {
+    //             alert("✅ Listing Created Successfully!");
+    //             navigate("/");
+    //         }, 1000);
+    //     } catch (error) {
+    //         console.error("Failed to create listing", error);
+    //         alert(error.response?.data?.message || "❌ Failed to create listing");
+    //         setIsLoading(false);
+    //     }
+    // };
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300">
@@ -220,7 +331,7 @@ export default function ProductListingForm() {
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-600 font-semibold">/kg</span>
                                     </div>
                                     <div className="bg-emerald-50/50 rounded-xl p-3 border border-emerald-200">
-                                        <p className="text-sm text-emerald-700">💡 Set a competitive price based on market rates</p>
+                                        <p className="text-sm text-red-400 text-emerald-700">💡 Set a competitive price based on market rates</p>
                                     </div>
                                 </div>
                             </div>
@@ -287,18 +398,61 @@ export default function ProductListingForm() {
 
                                 <input
                                     type="date"
-                                    name="AvailableDate"
-                                    value={listing.AvailableDate}
+                                    name="availableDate"
+                                    value={listing.availableDate}
                                     onChange={handleChange}
                                     min={new Date().toISOString().split('T')[0]}
                                     required
                                     className="w-full px-6 py-4 rounded-2xl border-2 border-orange-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-200 focus:outline-none transition-all duration-300 text-lg bg-white/80 backdrop-blur-sm shadow-inner"
                                 />
 
-                                <div className="bg-orange-50/50 rounded-xl p-3 border border-orange-200">
+                                <div className="bg-orange-50/50 rounded-xl text-red-400 p-3 border border-orange-200">
                                     <p className="text-sm text-orange-700">⏰ Choose the date when your produce will be ready for harvest/delivery</p>
                                 </div>
                             </div>
+                            {/* Product Images Upload Section */}
+                            <div className="space-y-4 mt-8">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-green-600 rounded-lg">
+                                        <Sparkles className="w-5 h-5 text-white" />
+                                    </div>
+                                    <label className="text-xl font-bold text-green-800">
+                                        🖼️ Upload Product Images (Max 5)
+                                    </label>
+                                </div>
+
+                                <input
+                                    type="file"
+                                    multiple
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="block w-full px-6 py-4 rounded-2xl border-2 border-green-200 focus:border-green-500 focus:ring-4 focus:ring-green-200 focus:outline-none transition-all duration-300 text-lg bg-white/80 backdrop-blur-sm shadow-inner file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                                />
+
+                                {/* Preview Images */}
+                                <div className="bg-green-50/50 rounded-xl p-4 border border-green-200 shadow-inner">
+                                    <p className="text-sm text-green-700 mb-3">🖼️ Preview of selected images:</p>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                        {images.map((image, index) => (
+                                            <div key={index} className="relative rounded-lg overflow-hidden shadow-md">
+                                                <img
+                                                    src={URL.createObjectURL(image)}
+                                                    alt={`preview-${index}`}
+                                                    className="w-full h-32 object-cover rounded-lg"
+                                                />
+                                                <button
+                                                    onClick={() => handleRemoveImage(index)}
+                                                    className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full w-6 h-6 text-xs flex items-center justify-center shadow-lg"
+                                                    title="Remove"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
 
                             {/* Submit Button */}
                             <div className="pt-8">

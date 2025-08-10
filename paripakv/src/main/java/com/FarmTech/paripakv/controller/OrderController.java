@@ -12,7 +12,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -66,24 +68,29 @@ public class OrderController {
 
     @GetMapping("/farmerOrders")
     public ResponseEntity<List<Order>> getFarmerOrders() {
-        Users users = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<ProductListing> productListings = productListingService.getMy(users.getEmail());
-        System.out.println("Product listings: " + productListings);
+        try {
+            Users users = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            List<ProductListing> productListings = productListingService.getMy(users.getEmail());
+            System.out.println("Product listings: " + productListings);
 
-        List<Order> orders = new ArrayList<>();
-        for (ProductListing productListing : productListings) {
-            System.out.println("Checking orders for Listing ID: " + productListing.getId());
-            List<Order> listingOrders = service.getOrdersListingId(productListing.getId());
-            System.out.println("Orders found: " + listingOrders);
+            List<Order> orders = new ArrayList<>();
+            for (ProductListing productListing : productListings) {
+                System.out.println("Checking orders for Listing ID: " + productListing.getId());
+                List<Order> listingOrders = service.getOrdersListingId(productListing.getId());
+                System.out.println("Orders found: " + listingOrders);
 
-            if (listingOrders != null) {
-                orders.addAll(listingOrders);
+                if (listingOrders != null) {
+                    orders.addAll(listingOrders);
+                }
             }
+
+
+            System.out.println("Fetched orders: " + orders);
+            return new ResponseEntity<>(orders, HttpStatus.OK);
         }
-
-
-        System.out.println("Fetched orders: " + orders);
-        return new ResponseEntity<>(orders, HttpStatus.OK);
+        catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/getById")
@@ -120,6 +127,16 @@ public class OrderController {
     public ResponseEntity<String> inTransitOrder(@PathVariable UUID orderId) {
             service.inTransitOrder(orderId);
             return ResponseEntity.ok("Order picked up");
+    }
+
+
+    @PostMapping("/{orderId}/proof")
+    public ResponseEntity<String> uploadOrder(@PathVariable UUID orderId,@RequestParam("File") MultipartFile file) {
+        try {
+            return ResponseEntity.ok(service.uploadOrder(orderId, file));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

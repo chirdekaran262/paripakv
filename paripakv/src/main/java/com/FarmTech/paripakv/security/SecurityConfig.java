@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/register", "/users/login", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/users/forgot-password").permitAll()
                         .requestMatchers("/uploads/*").permitAll()
+                        .requestMatchers("/uploads/proofs/*").permitAll()
                         .requestMatchers("/users/reset-password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/listings", "/listings/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/listings").hasRole("FARMER")

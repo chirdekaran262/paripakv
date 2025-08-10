@@ -3,6 +3,8 @@ package com.FarmTech.paripakv.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.UUID;
 
@@ -19,5 +21,7 @@ public class ProductImage {
     @ManyToOne
     @JoinColumn(name = "product_id")
     @JsonBackReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private ProductListing product;
 }

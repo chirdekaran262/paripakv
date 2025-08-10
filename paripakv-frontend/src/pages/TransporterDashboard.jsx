@@ -68,7 +68,7 @@ export default function TransporterDashboard() {
     const [farmerDetails, setFarmerDetails] = useState({});
     const { userId } = useAuth();
     const token = Cookies.get("token");
-
+    const [selectedFile, setSelectedFile] = useState(null);
     // Enhanced fetch user details with caching
     const fetchUserDetails = useCallback(async (buyerId) => {
         if (buyerDetails[buyerId]) return buyerDetails[buyerId];
@@ -100,7 +100,6 @@ export default function TransporterDashboard() {
             return null;
         }
     }, [productDetails, token]);
-    console.log("Fetched product details:", productDetails);
     // Enhanced fetch farmer details with caching
     const fetchFarmerDetails = useCallback(async (farmerId) => {
         if (farmerDetails[farmerId]) return farmerDetails[farmerId];
@@ -185,6 +184,8 @@ export default function TransporterDashboard() {
             todayDeliveries: todayDeliveries
         };
     };
+
+
 
     useEffect(() => {
         if (userId) {
@@ -291,27 +292,40 @@ export default function TransporterDashboard() {
 
     // Enhanced upload delivery proof function
     const handleUploadProof = async (orderId, file) => {
+        if (!file) {
+            showNotification("Please select a file before uploading", "warning");
+            return;
+        }
+
         setUploadingProof(orderId);
+
         try {
-            showNotification("Uploading delivery proof...", "info");
-
             const formData = new FormData();
-            formData.append('proof', file);
-            formData.append('orderId', orderId);
+            formData.append('File', file); // matches your backend param
 
-            await axios.post(`${import.meta.env.VITE_API_URL}/orders/${orderId}/proof`, formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
+            await axios.post(
+                `${import.meta.env.VITE_API_URL}/orders/${orderId}/proof`,
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    onUploadProgress: (progressEvent) => {
+                        if (progressEvent.total) {
+                            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                            showNotification(`Uploading: ${percent}%`, "info");
+                        }
+                    }
                 }
-            });
+            );
 
-            showNotification("Delivery proof uploaded successfully! 📸", "success");
+            showNotification("✅ Delivery proof uploaded successfully!", "success");
             setShowUploadModal(false);
+            setSelectedFile(null); // clear file after upload
             fetchOrders();
         } catch (error) {
             console.error("Failed to upload proof:", error);
-            showNotification("Failed to upload delivery proof", "error");
+            showNotification(error.response?.data?.message || "Failed to upload delivery proof", "error");
         } finally {
             setUploadingProof(null);
         }
@@ -796,16 +810,36 @@ export default function TransporterDashboard() {
                                                     </div>
                                                 )}
 
-                                                {order.deliveryStatus === "IN_TRANSIT" && (
-                                                    <button
-                                                        onClick={() => { setSelectedOrder(order); setShowUploadModal(true); }}
-                                                        className="flex-1 sm:flex-none bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
-                                                    >
-                                                        <Camera className="w-5 h-5" />
-                                                        Upload Proof
-                                                    </button>
+                                                {order.deliveryStatus === "IN_TRANSIT" && !order.proofUploaded && (
+                                                    <>
+                                                        {!selectedFile ? (
+                                                            // Step 1: File picker
+                                                            <label className="flex-1 sm:flex-none bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl cursor-pointer">
+                                                                <Camera className="w-5 h-5" />
+                                                                Choose Proof
+                                                                <input
+                                                                    type="file"
+                                                                    accept="image/*"
+                                                                    onChange={(e) => {
+                                                                        if (e.target.files[0]) {
+                                                                            setSelectedFile(e.target.files[0]);
+                                                                        }
+                                                                    }}
+                                                                    className="hidden"
+                                                                />
+                                                            </label>
+                                                        ) : (
+                                                            // Step 2: Upload button
+                                                            <button
+                                                                onClick={() => handleUploadProof(order.id, selectedFile)}
+                                                                className="flex-1 sm:flex-none bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                                                                disabled={uploadingProof === order.id}
+                                                            >
+                                                                {uploadingProof === order.id ? "Uploading..." : "Upload Proof"}
+                                                            </button>
+                                                        )}
+                                                    </>
                                                 )}
-
                                                 <button
                                                     onClick={() => setSelectedOrder(selectedOrder?.id === order.id ? null : order)}
                                                     className="flex-1 sm:flex-none bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 group"

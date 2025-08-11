@@ -7,6 +7,7 @@ import com.FarmTech.paripakv.model.ProductListing;
 import com.FarmTech.paripakv.repository.OrderRepository;
 import com.FarmTech.paripakv.repository.ProductListingRepository;
 import com.FarmTech.paripakv.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -151,9 +153,9 @@ public class OrderService {
             Path filePath = Paths.get(uploadDir + fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Set proof image URL (assuming you serve static files from /uploads)
-            order.setDeliveryStatus(DeliveryStatus.DELIVERED);
-            order.setDeliveryTime(LocalDateTime.now());
+            String otp = String.valueOf((int)(Math.random() * 900000) + 100000);
+            order.setOtpCode(otp);
+            order.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
             order.setProofImageUrl("/uploads/proofs/" + fileName);
             System.out.println(order);
             repo.save(order);
@@ -163,5 +165,28 @@ public class OrderService {
         catch (Exception e) {
             return e.getMessage();
         }
+    }
+
+    public ResponseEntity<String> verifyOtp(UUID orderId, Map<String, String> body) {
+        String enteredOtp = body.get("code");
+
+        Order order = repo.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (order.getOtpExpiry().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("OTP expired");
+        }
+
+        if (!order.getOtpCode().equals(enteredOtp)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid OTP");
+        }
+
+        order.setDeliveryStatus(DeliveryStatus.DELIVERED);
+        order.setDeliveryTime(LocalDateTime.now());
+        order.setOtpCode(null); // Clear OTP
+        repo.save(order);
+       return ResponseEntity.ok("Delivery verified successfully");
     }
 }

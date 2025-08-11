@@ -42,6 +42,7 @@ import {
     DollarSign,
     Zap
 } from "lucide-react";
+import { reloadResources } from "i18next";
 
 export default function TransporterDashboard() {
     const [orders, setOrders] = useState([]);
@@ -69,6 +70,9 @@ export default function TransporterDashboard() {
     const { userId } = useAuth();
     const token = Cookies.get("token");
     const [selectedFile, setSelectedFile] = useState(null);
+    const [otpSent, setOtpSent] = useState(false);
+    const [otpCode, setOtpCode] = useState("");
+
     // Enhanced fetch user details with caching
     const fetchUserDetails = useCallback(async (buyerId) => {
         if (buyerDetails[buyerId]) return buyerDetails[buyerId];
@@ -330,6 +334,28 @@ export default function TransporterDashboard() {
             setUploadingProof(null);
         }
     };
+
+    async function sendOtp(orderId) {
+        await axios.post(`${import.meta.env.VITE_API_URL}/orders/send-otp/${orderId}`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    }
+
+    async function verifyOtp(orderId, code) {
+        try {
+            const res = await axios.post(
+                `${import.meta.env.VITE_API_URL}/orders/${orderId}/verify-otp`,
+                { code: code },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            return res.status === 200; // true if OTP is valid
+        } catch (err) {
+            return false; // false if OTP is invalid or request fails
+        }
+    }
+
+
 
     // Enhanced notification system
     const showNotification = (message, type = "success") => {
@@ -810,9 +836,9 @@ export default function TransporterDashboard() {
                                                     </div>
                                                 )}
 
-                                                {order.deliveryStatus === "IN_TRANSIT" && !order.proofUploaded && (
+                                                {order.deliveryStatus === "IN_TRANSIT" && (
                                                     <>
-                                                        {!selectedFile ? (
+                                                        {!selectedFile && !otpSent && !order.proofImageUrl ? (
                                                             // Step 1: File picker
                                                             <label className="flex-1 sm:flex-none bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl cursor-pointer">
                                                                 <Camera className="w-5 h-5" />
@@ -828,18 +854,50 @@ export default function TransporterDashboard() {
                                                                     className="hidden"
                                                                 />
                                                             </label>
-                                                        ) : (
-                                                            // Step 2: Upload button
+                                                        ) : !otpSent && !order.proofImageUrl ? (
+                                                            // Step 2: Upload proof
                                                             <button
-                                                                onClick={() => handleUploadProof(order.id, selectedFile)}
+                                                                onClick={async () => {
+                                                                    await handleUploadProof(order.id, selectedFile);
+                                                                    // Send OTP after successful upload
+                                                                    setOtpSent(true);
+                                                                }}
                                                                 className="flex-1 sm:flex-none bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                                                                 disabled={uploadingProof === order.id}
                                                             >
                                                                 {uploadingProof === order.id ? "Uploading..." : "Upload Proof"}
                                                             </button>
+                                                        ) : (
+                                                            // Step 3: OTP Verification
+                                                            <div className="flex gap-2 items-center">
+                                                                <input
+                                                                    type="text"
+                                                                    maxLength={6}
+                                                                    value={otpCode}
+                                                                    onChange={(e) => setOtpCode(e.target.value)}
+                                                                    className="border border-gray-300 rounded-lg px-3 py-2 text-center w-24 text-lg"
+                                                                    placeholder="OTP"
+                                                                />
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        const success = await verifyOtp(order.id, otpCode);
+                                                                        if (success) {
+                                                                            alert("Delivery verified!");
+                                                                            showNotification("Delivery verified!");
+                                                                            fetchOrders();
+                                                                        } else {
+                                                                            alert("Invalid OTP");
+                                                                        }
+                                                                    }}
+                                                                    className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-lg"
+                                                                >
+                                                                    Verify
+                                                                </button>
+                                                            </div>
                                                         )}
                                                     </>
                                                 )}
+
                                                 <button
                                                     onClick={() => setSelectedOrder(selectedOrder?.id === order.id ? null : order)}
                                                     className="flex-1 sm:flex-none bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 group"

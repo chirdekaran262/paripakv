@@ -40,4 +40,8 @@ public class Order {
     private String deliveryAddress;
 
     private String proofImageUrl;
+
+    private String otpCode;
+    private LocalDateTime otpExpiry;
+
 }

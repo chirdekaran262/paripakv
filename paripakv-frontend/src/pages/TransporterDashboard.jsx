@@ -323,7 +323,7 @@ export default function TransporterDashboard() {
                 }
             );
 
-            showNotification("✅ Delivery proof uploaded successfully!", "success");
+            showNotification("✅ Delivery proof uploaded successfully! \nCheck Mail For OTP", "success");
             setShowUploadModal(false);
             setSelectedFile(null); // clear file after upload
             fetchOrders();
@@ -861,6 +861,7 @@ export default function TransporterDashboard() {
                                                                     await handleUploadProof(order.id, selectedFile);
                                                                     // Send OTP after successful upload
                                                                     setOtpSent(true);
+
                                                                 }}
                                                                 className="flex-1 sm:flex-none bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                                                                 disabled={uploadingProof === order.id}

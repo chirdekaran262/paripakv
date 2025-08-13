@@ -6,6 +6,7 @@ import com.FarmTech.paripakv.model.ProductListing;
 import com.FarmTech.paripakv.model.Users;
 import com.FarmTech.paripakv.service.OrderService;
 import com.FarmTech.paripakv.service.ProductListingService;
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -125,7 +126,7 @@ public class OrderController {
     }
 
     @PutMapping("/transporter/{orderId}/inTransit")
-    public ResponseEntity<String> inTransitOrder(@PathVariable UUID orderId) {
+    public ResponseEntity<String> inTransitOrder(@PathVariable UUID orderId) throws MessagingException, IOException {
             service.inTransitOrder(orderId);
             return ResponseEntity.ok("Order picked up");
     }

@@ -3,9 +3,7 @@ import axios from 'axios';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Tractor, Phone, CreditCard, MapPin, Building, Flag, Hash, UserCheck, ArrowRight } from 'lucide-react';
 import Cookies from 'js-cookie';
-function useQuery() {
-    return new URLSearchParams(useLocation().search);
-}
+
 export default function CompleteProfile() {
     const [formData, setFormData] = useState({
         mobile: '',
@@ -17,27 +15,54 @@ export default function CompleteProfile() {
         pincode: '',
         role: 'FARMER' // Changed from role to userRole to match backend
     });
+    const [profileImage, setProfileImage] = useState(null);
+
+
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-    const query = useQuery();
-    const token = query.get('token');
-    Cookies.set('token', token, { expires: 7 }); // Ensure OAuth2 redirect handler is called
+    const token = Cookies.get("token");
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setMessage('');
 
         console.log('Submitting profile with token:', token);
+
+
         try {
-            await axios.put(`${import.meta.env.VITE_API_URL}/users/complete-profile`, formData, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const formDataToSend = new FormData();
+
+            // Send all fields as JSON in a single "users" part
+            formDataToSend.append(
+                "users",
+                new Blob([JSON.stringify(formData)], { type: "application/json" })
+            );
+
+            // Add file if exists
+            if (profileImage) {
+                formDataToSend.append("profileImage", profileImage);
+            }
+
+            const response = await axios.put(
+                `${import.meta.env.VITE_API_URL}/users/complete-profile`,
+                formDataToSend,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                }
+            );
+
 
             setMessage('Profile completed successfully! Redirecting...');
+            alert('Profile completed successfully! Redirecting...');
             setTimeout(() => {
                 navigate('/listings');
                 window.location.reload(); // Reload to ensure the new profile is reflected
@@ -45,6 +70,7 @@ export default function CompleteProfile() {
         } catch (err) {
             console.error('Profile update error:', err);
             setMessage(err.response?.data?.message || err.response?.data || 'Profile update failed. Please try again.');
+            alert("Profile update failed. Please try again.")
         } finally {
             setIsLoading(false);
         }
@@ -260,6 +286,25 @@ export default function CompleteProfile() {
                                         placeholder="400001"
                                         pattern="[0-9]{6}"
                                         title="Please enter a valid 6-digit pincode"
+                                    />
+                                </div>
+                            </div>
+                            {/* Profile Image Upload */}
+                            <div className="space-y-1.5">
+                                <label className="block text-sm font-semibold text-green-800">Profile Image</label>
+                                <div className="relative flex items-center group">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => setProfileImage(e.target.files[0])}
+                                        className="w-full pl-3 pr-4 py-2.5 bg-white/60 hover:bg-white/80 
+                 focus:bg-white/95 border border-white/50 rounded-xl 
+                 focus:ring-2 focus:ring-green-500/30 focus:border-transparent 
+                 outline-none text-green-800 transition-all duration-200 file:mr-4 
+                 file:py-2 file:px-4 file:rounded-full file:border-0 
+                 file:text-sm file:font-semibold file:bg-green-100 
+                 file:text-green-700 hover:file:bg-green-200"
+                                        required
                                     />
                                 </div>
                             </div>

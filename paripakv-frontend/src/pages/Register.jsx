@@ -22,22 +22,48 @@ export default function Register() {
     });
     const { t } = useTranslation();
     const navigate = useNavigate();
-
+    const [profileImage, setProfileImage] = useState(null);
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/register`, formData);
+            const formDataToSend = new FormData();
+
+            // Send all fields as JSON in a single "users" part
+            formDataToSend.append(
+                "users",
+                new Blob([JSON.stringify(formData)], { type: "application/json" })
+            );
+
+            // Add file if exists
+            if (profileImage) {
+                formDataToSend.append("profileImage", profileImage);
+            }
+
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/users/register`,
+                formDataToSend,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
             console.log(response.data);
-            alert('Registration successful!');
-            navigate('/login');
+            alert("🎉 Registration successful!");
+            navigate("/login");
         } catch (err) {
-            alert(err.response?.data || 'Registration failed');
+            console.error(err);
+            alert(err.response?.data || "❌ Registration failed");
         }
     };
+
+
 
     const handleGoogleLogin = () => {
         window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`;
@@ -274,6 +300,25 @@ export default function Register() {
                                 className="w-full pl-4 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-white-800 transition-all duration-200"
                                 required
                             />
+                        </div>
+                        {/* Profile Image Upload */}
+                        <div className="space-y-1.5">
+                            <label className="block text-sm font-semibold text-green-800">Profile Image</label>
+                            <div className="relative flex items-center group">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => setProfileImage(e.target.files[0])}
+                                    className="w-full pl-3 pr-4 py-2.5 bg-white/60 hover:bg-white/80 
+                 focus:bg-white/95 border border-white/50 rounded-xl 
+                 focus:ring-2 focus:ring-green-500/30 focus:border-transparent 
+                 outline-none text-green-800 transition-all duration-200 file:mr-4 
+                 file:py-2 file:px-4 file:rounded-full file:border-0 
+                 file:text-sm file:font-semibold file:bg-green-100 
+                 file:text-green-700 hover:file:bg-green-200"
+                                    required
+                                />
+                            </div>
                         </div>
 
                         {/* Submit button */}

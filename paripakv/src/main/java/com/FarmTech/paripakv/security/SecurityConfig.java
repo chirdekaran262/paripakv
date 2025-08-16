@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/forgot-password").permitAll()
                         .requestMatchers("/uploads/*").permitAll()
                         .requestMatchers("/uploads/proofs/*").permitAll()
+                        .requestMatchers("/uploads/profile/*").permitAll()
                         .requestMatchers("/users/reset-password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/listings", "/listings/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/listings").hasRole("FARMER")

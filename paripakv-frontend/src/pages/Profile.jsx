@@ -14,7 +14,9 @@ export default function Profile() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-
+    const baseUrl = "http://localhost:8089"
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
     useEffect(() => {
         const fetchProfile = async () => {
             const token = Cookies.get('token');
@@ -32,7 +34,7 @@ export default function Profile() {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUser(userData);
-
+                console.log(userData)
                 if (userData.role === 'FARMER') {
                     const { data: listings } = await axios.get(`${import.meta.env.VITE_API_URL}/listings/farmer`, {
                         headers: { Authorization: `Bearer ${token}` },
@@ -54,7 +56,14 @@ export default function Profile() {
 
         fetchProfile();
     }, [navigate]);
-
+    const handleImageClick = (imageUrl) => {
+        setSelectedImage(imageUrl);
+        setIsModalOpen(true);
+    };
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedImage(null);
+    };
     const handleLogout = () => {
         Cookies.remove('token');
         navigate('/login');
@@ -137,13 +146,59 @@ export default function Profile() {
                     <div className="bg-gradient-to-br from-green-50 via-white to-green-100 border border-green-200 rounded-3xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300">
                         <div className="flex flex-col lg:flex-row items-center gap-8">
                             <div className="relative">
-                                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white font-bold text-4xl flex items-center justify-center shadow-xl ring-4 ring-white/50">
-                                    {user.name?.[0]?.toUpperCase() || '👤'}
-                                </div>
+                                {user.imageUrl ? (
+                                    <img
+                                        src={`${baseUrl}${user.imageUrl}`}
+                                        alt={user.name}
+                                        onClick={() => handleImageClick(`${baseUrl}${user.imageUrl}`)}
+                                        className="w-32 h-32 rounded-full object-cover shadow-xl ring-4 ring-white/50"
+                                    />
+                                ) : (
+                                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white font-bold text-4xl flex items-center justify-center shadow-xl ring-4 ring-white/50">
+                                        {user.name?.[0]?.toUpperCase() || '👤'}
+                                    </div>
+                                )}
+                                {isModalOpen && (
+                                    <div
+                                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
+                                        onClick={closeModal}
+                                    >
+                                        <div
+                                            className="relative w-full h-full max-w-6xl max-h-full flex items-center justify-center"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {/* Close Button */}
+                                            <button
+                                                className="absolute top-4 right-4 z-20 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-200 hover:scale-110"
+                                                onClick={closeModal}
+                                            >
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+
+                                            {/* Image Container */}
+                                            <div className="relative w-full h-full flex items-center justify-center">
+                                                <img
+                                                    src={selectedImage}
+                                                    alt="Full View"
+                                                    className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                                                    style={{
+                                                        maxHeight: 'calc(100vh - 80px)',
+                                                        maxWidth: 'calc(100vw - 80px)'
+                                                    }}
+                                                />
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="absolute -bottom-2 -right-2 bg-green-600 rounded-full p-2">
                                     <User className="w-4 h-4 text-white" />
                                 </div>
                             </div>
+
 
                             <div className="flex-1 text-center lg:text-left w-full">
                                 <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mb-6">

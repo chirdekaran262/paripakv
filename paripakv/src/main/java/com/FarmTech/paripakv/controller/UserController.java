@@ -10,12 +10,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
@@ -37,12 +39,16 @@ public class UserController {
     private String frontendBaseUrl;
 
 
-    @PostMapping("/register")
-    public ResponseEntity<Users> register(@RequestBody Users users) {
-        Users registered = userService.register(users);
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Users> register(
+            @RequestPart("users") Users users,
+            @RequestPart("profileImage") MultipartFile profileImage) throws IOException {
+
+        Users registered = userService.register(users, profileImage);
         users.setProfileCompleted(true);
-        return new ResponseEntity<>(registered, HttpStatus.CREATED); // 201 Created
+        return new ResponseEntity<>(registered, HttpStatus.CREATED);
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody AuthRequest request) {
@@ -76,12 +82,17 @@ public class UserController {
     }
 
     @PutMapping("/complete-profile")
-    public ResponseEntity<String> completeProfile(@RequestBody CompleteProfileRequest updatedUser) {
+    public ResponseEntity<String> completeProfile(
+            @RequestPart("users") CompleteProfileRequest updatedUser,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) throws IOException {
+
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(email+updatedUser);
-        userService.completeProfile(updatedUser, email);
-        return ResponseEntity.ok("Profile completed successfully."); // 200 OK
+        System.out.println(email + updatedUser);
+        userService.completeProfile(updatedUser, email, profileImage);
+
+        return ResponseEntity.ok("Profile completed successfully.");
     }
+
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> request) {

@@ -71,4 +71,5 @@ public class Users implements UserDetails {
     @Column(nullable = false)
     private boolean profileCompleted = false;
 
+    private String imageUrl;
 }

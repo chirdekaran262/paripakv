@@ -16,7 +16,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,15 +36,26 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder encoder;
     private final PasswordResetTokenRepository tokenRepo;
     private final EmailService emailService;
-
+    private final String uploadDir="uploads/profile/";
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return repo.findByEmail(email);
     }
 
-    public Users register(Users user) {
+    public Users register(Users user, MultipartFile profileImage) throws IOException {
+        System.out.println(user);
+        File dir = new File(uploadDir);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        String filename=UUID.randomUUID()+"_"+profileImage.getOriginalFilename();
+        System.out.println(filename);
+        Path path = Paths.get(uploadDir+filename);
+        Files.copy(profileImage.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
+        user.setImageUrl("/uploads/profile/"+filename);
         user.setPassword(encoder.encode(user.getPassword()));
+        System.out.println(user.getImageUrl());
         return repo.save(user);
     }
 
@@ -66,8 +84,20 @@ public class UserService implements UserDetailsService {
         return repo.save(user);
     }
 
-    public void completeProfile(CompleteProfileRequest updatedUser, String email) {
+    public void completeProfile(CompleteProfileRequest updatedUser, String email,MultipartFile profileImage) throws IOException {
         Users user = repo.findByEmail(email);
+
+        File dir = new File(uploadDir);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        String filename=UUID.randomUUID()+"_"+profileImage.getOriginalFilename();
+        System.out.println(filename);
+        Path path = Paths.get(uploadDir+filename);
+        Files.copy(profileImage.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
+        user.setImageUrl("/uploads/profile/"+filename);
+
+
 
         user.setMobile(updatedUser.getMobile());
         user.setAadhaar(updatedUser.getAadhaar());

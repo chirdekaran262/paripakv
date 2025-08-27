@@ -42,6 +42,8 @@ public class SecurityConfig {
                         .requestMatchers("/uploads/proofs/*").permitAll()
                         .requestMatchers("/uploads/profile/*").permitAll()
                         .requestMatchers("/users/reset-password").permitAll()
+                        .requestMatchers("/ws/**").permitAll()  // 👈 allow WS handshake
+                        .requestMatchers("/topic/**", "/app/**").permitAll() // 👈 allow messaging endpoints
                         .requestMatchers(HttpMethod.GET, "/listings", "/listings/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/listings").hasRole("FARMER")
                         .anyRequest().authenticated()

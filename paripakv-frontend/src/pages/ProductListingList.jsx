@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Search, Filter, MapPin, Calendar, Package, IndianRupee, Heart, Star, Eye, MessageCircle, ShoppingCart, Sparkles, TrendingUp, Users, Leaf, Award } from 'lucide-react';
@@ -6,7 +6,6 @@ import Cookies from 'js-cookie';
 import Header from "../components/Header";
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from "react-i18next";
-
 export default function ProductListingList() {
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
@@ -18,6 +17,7 @@ export default function ProductListingList() {
     const [imageErrorMap, setImageErrorMap] = useState({});
     const [favorites, setFavorites] = useState(new Set());
     const baseUrl = "http://localhost:8089"
+    const userId = useAuth().userId;
     useEffect(() => {
         const fetchListings = async () => {
             try {
@@ -215,6 +215,7 @@ export default function ProductListingList() {
                                 key={item.id || index}
                                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group"
                             >
+
                                 {/* Product Header */}
                                 <div className="bg-green-100 p-6 border-b border-gray-100">
                                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -373,9 +374,18 @@ export default function ProductListingList() {
                                         <button
                                             onClick={() => {
                                                 if (isAuthenticated) {
-                                                    item?.farmerId
-                                                        ? navigate(`/chat/${item.farmerId}`)
-                                                        : setError("Farmer contact information not available");
+                                                    if (item?.farmerId) {
+                                                        navigate(`/chat/${item.farmerId}/${item.id}`, {
+                                                            state: {
+                                                                otherUserName: item.farmerName,
+                                                                productName: item.name,
+                                                                productImage: item.images?.[0]?.imageUrl ? `${baseUrl}${item.images[0].imageUrl}` : null
+                                                            }
+                                                        });
+
+                                                    } else {
+                                                        setError("Farmer contact information not available");
+                                                    }
                                                 } else {
                                                     navigate("/login");
                                                 }
@@ -383,7 +393,7 @@ export default function ProductListingList() {
                                             className="flex-1 sm:flex-none bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 group"
                                         >
                                             <MessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                            {isAuthenticated ? 'Contact Farmer' : 'Login to Contact'}
+                                            {isAuthenticated ? "Contact Farmer" : "Login to Contact"}
                                         </button>
 
                                         <button

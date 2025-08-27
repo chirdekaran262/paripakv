@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-    Tractor, LogIn, Plus, User, Menu, Bell, Settings, Home, Grid3X3, Info
+    Tractor, LogIn, Plus, User, Menu, Bell, Settings, Home, Grid3X3, Info, MessageCircle
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
+import MessagesIcon from "./MessagesIcon";
 
 export default function Header() {
     const navigate = useNavigate();
@@ -89,14 +90,18 @@ export default function Header() {
                             {isAuthenticated && (
                                 <>
                                     <div className="hidden md:flex items-center space-x-3">
+
                                         {userRole === "BUYER" && (
-                                            <Link
-                                                to={`/buyer-orders/${userId}`}
-                                                className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300 hover:from-amber-600 hover:to-orange-600 text-white px-5 py-2.5 rounded-full flex items-center space-x-2 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 hover:text-black"
-                                            >
-                                                <span>📦</span>
-                                                <span>My Orders</span>
-                                            </Link>
+                                            <>
+                                                <Link
+                                                    to={`/buyer-orders/${userId}`}
+                                                    className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300 hover:from-amber-600 hover:to-orange-600 text-white px-5 py-2.5 rounded-full flex items-center space-x-2 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 hover:text-black"
+                                                >
+                                                    <span>📦</span>
+                                                    <span>My Orders</span>
+                                                </Link>
+                                                <MessagesIcon className="w-5 h-5 text-green-700" />
+                                            </>
                                         )}
 
                                         {userRole === "FARMER" && (
@@ -115,6 +120,14 @@ export default function Header() {
                                                     <span>📦</span>
                                                     <span>Orders</span>
                                                 </Link>
+                                                {/* <Link
+                                                    to={`/chat/farmer/${userId}`}
+                                                    className="p-3 bg-green-50 rounded-full hover:bg-green-100 transition-all duration-200"
+                                                    title="Messages"
+                                                >
+                                                    <MessageCircle className="w-5 h-5 text-green-700" />
+                                                </Link> */}
+                                                <MessagesIcon className="w-5 h-5 text-green-700" />
                                             </>
                                         )}
 
@@ -339,6 +352,14 @@ export default function Header() {
                                             >
                                                 📦 Manage Orders
                                             </Link>
+                                            {/* <Link
+                                                to={`/chat/farmer/${userId}`}
+                                                className="p-3 bg-green-50 rounded-full hover:bg-green-100 transition-all duration-200"
+                                                title="Messages"
+                                            >
+                                                
+                                            </Link> */}
+                                            <MessageCircle className="w-5 h-5 text-green-700" />
                                         </>
                                     )}
 

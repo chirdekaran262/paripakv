@@ -21,7 +21,10 @@ import CompleteProfile from "./pages/CompleteProfile"; // Import the CompletePro
 import './i18n'; // Import the i18n configuration
 import i18n from "./i18n";
 import { useTranslation } from 'react-i18next';
-
+import FarmerChatPage from "./pages/FarmerChatPage";
+import ChatPage from "./pages/chatPage";
+import ChatList from './components/ChatList';
+import ChatWindow from './components/ChatWindow';
 
 function App() {
 
@@ -70,6 +73,11 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/complete-profile" element={<CompleteProfile />} />
+          <Route path="/chat/:buyerId/:farmerId/:productId" element={<ChatPage />} />
+          <Route path="/chat/farmer/:farmerId" element={<FarmerChatPage />} />
+          <Route path="/messages" element={<ChatList />} />
+          <Route path="/chat/:otherUserId/:productId" element={<ChatWindow />} />
+
           {/* Add more routes as needed */}
         </Routes>
       </AuthProvider>

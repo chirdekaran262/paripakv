@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState(null);
     const [currUserAddress, setCurrUserAddress] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
     useEffect(() => {
         const token = Cookies.get('token');
         console.log('AuthProvider token:', token);
@@ -25,6 +26,7 @@ export const AuthProvider = ({ children }) => {
                     setUserRole(res.data.role);
                     setUserId(res.data.id); // Store user ID
                     setCurrUserAddress(res.data.address); // Store current user address
+                    setCurrentUser(res.data); // Store entire user object
                 })
                 .catch(err => {
                     console.error("Error fetching role:", err);
@@ -67,7 +69,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, userRole, loading, userId, currUserAddress }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, userRole, loading, userId, currUserAddress, currentUser }}>
             {children}
         </AuthContext.Provider>
     );

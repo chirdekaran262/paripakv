@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/topic/**", "/app/**").permitAll() // 👈 allow messaging endpoints
                         .requestMatchers(HttpMethod.GET, "/listings", "/listings/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/listings").hasRole("FARMER")
+                        .requestMatchers("https://api.razorpay.com/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

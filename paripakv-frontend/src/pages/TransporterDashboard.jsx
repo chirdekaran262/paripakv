@@ -455,6 +455,85 @@ export default function TransporterDashboard() {
         return actions[status];
     };
 
+    // const handlePayment = async (orderId) => {
+    //     try {
+    //         const response = await fetch("http://localhost:8089/api/payment/create-order", {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+    //             body: JSON.stringify({ amount: 500 }) // Example amount
+    //         });
+
+    //         const order = await response.json();
+
+    //         if (!window.Razorpay) {
+    //             alert("Razorpay SDK not loaded!");
+    //             return;
+    //         }
+
+    //         const options = {
+    //             key: "rzp_test_12345", // your test key
+    //             amount: order.amount,
+    //             currency: order.currency,
+    //             name: "My Ecommerce",
+    //             description: "Order Payment",
+    //             order_id: order.id,
+    //             handler: function (response) {
+    //                 alert("Payment Success: " + response.razorpay_payment_id);
+    //             },
+    //             prefill: {
+    //                 name: "Test User",
+    //                 email: "test@example.com",
+    //                 contact: "9876543210",
+    //             },
+    //             theme: { color: "#3399cc" },
+    //         };
+
+    //         const rzp = new window.Razorpay(options);
+    //         rzp.open();
+    //     } catch (err) {
+    //         console.error("Payment Error:", err);
+    //     }
+    // };
+    const handlePayment = async (amount) => {
+        try {
+            // 1. Ask backend to create order
+            const res = await fetch("http://localhost:8089/api/payment/create-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({ amount }) // Rs. 500
+            });
+
+            const orderData = await res.json();
+
+            // 2. Initialize Razorpay checkout
+            const options = {
+                key: orderData.key,            // ✅ from backend
+                amount: orderData.amount,
+                currency: orderData.currency,
+                order_id: orderData.id,
+                name: "Paripakv",
+                description: "Crop Payment",
+                handler: function (response) {
+                    alert("Payment Success: " + response.razorpay_payment_id);
+                    // optionally call /api/payment/verify here
+                },
+                prefill: {
+                    name: "Farmer User",
+                    email: "farmer@example.com",
+                    contact: "9876543210"
+                },
+                theme: { color: "#05a11fff" }
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.open();
+        } catch (err) {
+            console.error("Payment Error:", err);
+            alert("Payment failed, please try again");
+        }
+    };
+
+
     // Enhanced loading state
     if (loading) {
         return (
@@ -832,6 +911,22 @@ export default function TransporterDashboard() {
                                                     <div className="flex-1 bg-gradient-to-r from-green-500 to-emerald-100 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-2 shadow-lg">
                                                         <CheckCircle className="w-5 h-5" />
                                                         <span>Completed Successfully</span>
+                                                        <Award className="w-4 h-4" />
+                                                    </div>
+                                                )}
+                                                {order.deliveryStatus === "DELIVERED" && !order.isPaid && (
+                                                    <button
+                                                        onClick={() => handlePayment(order.totalPrice + 275)} // Pass complete order object
+                                                        className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                                                    >
+                                                        💳 Pay Now ₹{order.totalPrice + 275}
+                                                    </button>
+                                                )}
+
+                                                {order.deliveryStatus === "DELIVERED" && order.isPaid && (
+                                                    <div className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-2 shadow-lg">
+                                                        <CheckCircle className="w-5 h-5" />
+                                                        <span>Payment Completed</span>
                                                         <Award className="w-4 h-4" />
                                                     </div>
                                                 )}

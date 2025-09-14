@@ -34,6 +34,15 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from 'react-hot-toast';
+<<<<<<< HEAD
+=======
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
+import { Navigation, Pagination } from 'swiper/modules';
+>>>>>>> new-feature
 
 export default function ProductDetails() {
     const { id } = useParams();
@@ -52,6 +61,25 @@ export default function ProductDetails() {
     const [isEditingAddress, setIsEditingAddress] = useState(false);
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
+<<<<<<< HEAD
+=======
+    const baseUrl = "http://localhost:8089"
+
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const handleImageClick = (imageUrl) => {
+        setSelectedImage(imageUrl);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedImage(null);
+    };
+
+>>>>>>> new-feature
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -218,6 +246,7 @@ export default function ProductDetails() {
                     Back to Products
                 </button>
 
+<<<<<<< HEAD
                 <div className="grid lg:grid-cols-2 gap-8">
                     {/* Product Image Section */}
                     <div className="space-y-6">
@@ -235,16 +264,139 @@ export default function ProductDetails() {
                             {/* Badges */}
                             <div className="absolute top-4 left-4 space-y-2">
                                 <div className="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 shadow-lg">
+=======
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+                    {/* Product Image Section */}
+                    <div className="space-y-6">
+                        {/* Image Container */}
+                        <div className="relative h-72 sm:h-80 md:h-96 lg:h-[500px] overflow-hidden rounded-2xl bg-white shadow-xl border border-gray-200">
+                            <div className="w-full h-full">
+                                {product.images?.length > 0 ? (
+                                    <Swiper
+                                        modules={[Navigation, Pagination]}
+                                        navigation
+                                        pagination={{ clickable: true }}
+                                        className="w-full h-full rounded-xl shadow-lg"
+                                    >
+                                        {product.images.map((img) => (
+                                            <SwiperSlide key={img.id}>
+                                                <img
+                                                    src={`${baseUrl}${img.imageUrl}`}
+                                                    alt={product.name}
+                                                    onClick={() => handleImageClick(`${baseUrl}${img.imageUrl}`)}
+                                                    onError={(e) => (e.target.src = "./assets/vegetable.png")}
+                                                    className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-105 duration-300"
+                                                    loading="lazy"
+                                                />
+                                            </SwiperSlide>
+                                        ))}
+                                    </Swiper>
+                                ) : (
+                                    <img
+                                        src="./assets/vegetable.png"
+                                        alt={product.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                )}
+
+                                {/* Improved Modal */}
+                                {isModalOpen && (
+                                    <div
+                                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
+                                        onClick={closeModal}
+                                    >
+                                        <div
+                                            className="relative w-full h-full max-w-6xl max-h-full flex items-center justify-center"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {/* Close Button */}
+                                            <button
+                                                className="absolute top-4 right-4 z-20 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all duration-200 hover:scale-110"
+                                                onClick={closeModal}
+                                            >
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+
+                                            {/* Image Container */}
+                                            <div className="relative w-full h-full flex items-center justify-center">
+                                                <img
+                                                    src={selectedImage}
+                                                    alt="Full View"
+                                                    className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                                                    style={{
+                                                        maxHeight: 'calc(100vh - 80px)',
+                                                        maxWidth: 'calc(100vw - 80px)'
+                                                    }}
+                                                />
+                                            </div>
+
+                                            {/* Optional: Image Navigation for Multiple Images */}
+                                            {product.images?.length > 1 && (
+                                                <>
+                                                    <button
+                                                        className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all duration-200 hover:scale-110"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const currentIndex = product.images.findIndex(img => `${baseUrl}${img.imageUrl}` === selectedImage);
+                                                            const prevIndex = currentIndex > 0 ? currentIndex - 1 : product.images.length - 1;
+                                                            setSelectedImage(`${baseUrl}${product.images[prevIndex].imageUrl}`);
+                                                        }}
+                                                    >
+                                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                                        </svg>
+                                                    </button>
+                                                    <button
+                                                        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all duration-200 hover:scale-110"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const currentIndex = product.images.findIndex(img => `${baseUrl}${img.imageUrl}` === selectedImage);
+                                                            const nextIndex = currentIndex < product.images.length - 1 ? currentIndex + 1 : 0;
+                                                            setSelectedImage(`${baseUrl}${product.images[nextIndex].imageUrl}`);
+                                                        }}
+                                                    >
+                                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                        </svg>
+                                                    </button>
+                                                </>
+                                            )}
+
+                                            {/* Image Counter */}
+                                            {product.images?.length > 1 && (
+                                                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
+                                                    {product.images.findIndex(img => `${baseUrl}${img.imageUrl}` === selectedImage) + 1} / {product.images.length}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Badges */}
+                            <div className="absolute top-4 left-4 space-y-2 z-10">
+                                <div className="bg-green-600 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-medium flex items-center gap-1 shadow-lg">
+>>>>>>> new-feature
                                     <Sparkles className="w-4 h-4" />
                                     Fresh
                                 </div>
                                 {isLowStock && !isOutOfStock && (
+<<<<<<< HEAD
                                     <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
+=======
+                                    <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-medium shadow-lg">
+>>>>>>> new-feature
                                         Limited Stock
                                     </div>
                                 )}
                                 {isOutOfStock && (
+<<<<<<< HEAD
                                     <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
+=======
+                                    <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-medium shadow-lg">
+>>>>>>> new-feature
                                         Out of Stock
                                     </div>
                                 )}
@@ -253,7 +405,11 @@ export default function ProductDetails() {
                             {/* Favorite Button */}
                             <button
                                 onClick={toggleFavorite}
+<<<<<<< HEAD
                                 className={`absolute top-4 right-4 p-3 rounded-full transition-all duration-200 shadow-lg ${isFavorite
+=======
+                                className={`absolute top-4 right-4 p-2 sm:p-3 rounded-full transition-all duration-200 shadow-lg ${isFavorite
+>>>>>>> new-feature
                                     ? 'bg-red-500 text-white shadow-red-200'
                                     : 'bg-white text-red-500 hover:bg-red-500 hover:text-white shadow-gray-200'
                                     }`}
@@ -262,7 +418,11 @@ export default function ProductDetails() {
                             </button>
 
                             {/* Rating */}
+<<<<<<< HEAD
                             <div className="absolute bottom-4 left-4 bg-white rounded-lg p-3 shadow-lg border border-gray-100">
+=======
+                            <div className="absolute bottom-4 left-4 bg-white rounded-lg p-2 sm:p-3 shadow-lg border border-gray-100">
+>>>>>>> new-feature
                                 <div className="flex items-center gap-1">
                                     {[...Array(5)].map((_, i) => (
                                         <Star key={i} className="w-4 h-4 fill-current text-yellow-400" />
@@ -273,6 +433,7 @@ export default function ProductDetails() {
                         </div>
 
                         {/* Product Stats */}
+<<<<<<< HEAD
                         <div className="grid grid-cols-3 gap-4">
                             <div className="bg-white rounded-xl p-4 text-center shadow-lg border border-gray-100">
                                 <Package className="w-6 h-6 text-green-600 mx-auto mb-2" />
@@ -287,6 +448,22 @@ export default function ProductDetails() {
                             <div className="bg-white rounded-xl p-4 text-center shadow-lg border border-gray-100">
                                 <Users className="w-6 h-6 text-blue-600 mx-auto mb-2" />
                                 <p className="text-sm text-gray-600">Orders</p>
+=======
+                        <div className="grid grid-cols-3 gap-4 sm:gap-6">
+                            <div className="bg-white rounded-xl p-3 sm:p-4 text-center shadow-lg border border-gray-100">
+                                <Package className="w-6 h-6 text-green-600 mx-auto mb-1" />
+                                <p className="text-xs sm:text-sm text-gray-600">Available</p>
+                                <p className="font-bold text-gray-800">{product.quantityKg} kg</p>
+                            </div>
+                            <div className="bg-white rounded-xl p-3 sm:p-4 text-center shadow-lg border border-gray-100">
+                                <Star className="w-6 h-6 text-yellow-500 mx-auto mb-1" />
+                                <p className="text-xs sm:text-sm text-gray-600">Rating</p>
+                                <p className="font-bold text-gray-800">4.8/5</p>
+                            </div>
+                            <div className="bg-white rounded-xl p-3 sm:p-4 text-center shadow-lg border border-gray-100">
+                                <Users className="w-6 h-6 text-blue-600 mx-auto mb-1" />
+                                <p className="text-xs sm:text-sm text-gray-600">Orders</p>
+>>>>>>> new-feature
                                 <p className="font-bold text-gray-800">120+</p>
                             </div>
                         </div>
@@ -294,6 +471,7 @@ export default function ProductDetails() {
 
                     {/* Product Details Section */}
                     <div className="space-y-6">
+<<<<<<< HEAD
                         {/* Product Header */}
                         <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
                             <div className="flex items-start justify-between mb-4">
@@ -302,35 +480,66 @@ export default function ProductDetails() {
                                     <div className="flex items-center gap-2 text-gray-600">
                                         <MapPin className="w-4 h-4" />
                                         <span>{product.villageName}</span>
+=======
+                        {/* Header */}
+                        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-xl border border-gray-100">
+                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                                <div>
+                                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">{product.name}</h1>
+                                    <div className="flex items-center gap-2 text-gray-600 text-sm mt-1">
+                                        <MapPin className="w-4 h-4" />
+                                        {product.villageName}
+>>>>>>> new-feature
                                     </div>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-sm text-gray-500">Price per kg</p>
+<<<<<<< HEAD
                                     <p className="text-3xl font-bold text-green-600 flex items-center gap-1">
                                         <IndianRupee className="w-6 h-6" />
+=======
+                                    <p className="text-2xl sm:text-3xl font-bold text-green-600 flex items-center gap-1">
+                                        <IndianRupee className="w-5 h-5" />
+>>>>>>> new-feature
                                         {product.pricePerKg}
                                     </p>
                                 </div>
                             </div>
 
+<<<<<<< HEAD
                             {/* Product Info Grid */}
                             <div className="grid grid-cols-2 gap-4 mb-6">
                                 <div className="bg-green-50 rounded-lg p-3 border border-green-100">
                                     <div className="flex items-center gap-2">
                                         <Calendar className="w-4 h-4 text-green-600" />
                                         <span className="text-sm text-green-700">Available Date</span>
+=======
+                            {/* Info Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                <div className="bg-green-50 rounded-lg p-3 border border-green-100">
+                                    <div className="flex items-center gap-2 text-sm text-green-700">
+                                        <Calendar className="w-4 h-4" />
+                                        Available Date
+>>>>>>> new-feature
                                     </div>
                                     <p className="font-medium text-green-800">{product.availableDate}</p>
                                 </div>
                                 <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+<<<<<<< HEAD
                                     <div className="flex items-center gap-2">
                                         <Package className="w-4 h-4 text-blue-600" />
                                         <span className="text-sm text-blue-700">Total Value</span>
+=======
+                                    <div className="flex items-center gap-2 text-sm text-blue-700">
+                                        <Package className="w-4 h-4" />
+                                        Total Value
+>>>>>>> new-feature
                                     </div>
                                     <p className="font-medium text-blue-800">₹{(product.quantityKg * product.pricePerKg).toLocaleString()}</p>
                                 </div>
                             </div>
 
+<<<<<<< HEAD
                             {/* Quality Badges */}
                             <div className="flex flex-wrap gap-2">
                                 <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 border border-green-200">
@@ -342,6 +551,19 @@ export default function ProductDetails() {
                                     Farm Fresh
                                 </span>
                                 <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 border border-yellow-200">
+=======
+                            {/* Tags */}
+                            <div className="flex flex-wrap gap-2">
+                                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 border border-green-200">
+                                    <Leaf className="w-3 h-3" />
+                                    Organic
+                                </span>
+                                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 border border-blue-200">
+                                    <Shield className="w-3 h-3" />
+                                    Farm Fresh
+                                </span>
+                                <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 border border-yellow-200">
+>>>>>>> new-feature
                                     <Award className="w-3 h-3" />
                                     Premium Quality
                                 </span>
@@ -349,11 +571,16 @@ export default function ProductDetails() {
                         </div>
 
                         {/* Farmer Information */}
+<<<<<<< HEAD
                         <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+=======
+                        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-xl border border-gray-100">
+>>>>>>> new-feature
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="bg-green-100 p-2 rounded-lg border border-green-200">
                                     <User className="w-5 h-5 text-green-700" />
                                 </div>
+<<<<<<< HEAD
                                 <h3 className="text-xl font-semibold text-gray-800">Farmer Information</h3>
                             </div>
 
@@ -368,10 +595,27 @@ export default function ProductDetails() {
                                         <div className="flex items-center gap-2">
                                             <Mail className="w-4 h-4 text-gray-500" />
                                             <span className="text-sm text-gray-600">Email:</span>
+=======
+                                <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Farmer Information</h3>
+                            </div>
+
+                            {user ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2 text-sm">
+                                            <User className="w-4 h-4 text-gray-500" />
+                                            <span className="text-gray-600">Name:</span>
+                                            <span className="font-medium text-gray-800">{user.name}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm">
+                                            <Mail className="w-4 h-4 text-gray-500" />
+                                            <span className="text-gray-600">Email:</span>
+>>>>>>> new-feature
                                             <span className="font-medium text-gray-800">{user.email}</span>
                                         </div>
                                     </div>
                                     <div className="space-y-3">
+<<<<<<< HEAD
                                         <div className="flex items-center gap-2">
                                             <Phone className="w-4 h-4 text-gray-500" />
                                             <span className="text-sm text-gray-600">Mobile:</span>
@@ -380,11 +624,22 @@ export default function ProductDetails() {
                                         <div className="flex items-center gap-2">
                                             <CreditCard className="w-4 h-4 text-gray-500" />
                                             <span className="text-sm text-gray-600">Aadhaar:</span>
+=======
+                                        <div className="flex items-center gap-2 text-sm">
+                                            <Phone className="w-4 h-4 text-gray-500" />
+                                            <span className="text-gray-600">Mobile:</span>
+                                            <span className="font-medium text-gray-800">{user.mobile}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm">
+                                            <CreditCard className="w-4 h-4 text-gray-500" />
+                                            <span className="text-gray-600">Aadhaar:</span>
+>>>>>>> new-feature
                                             <span className="font-medium text-gray-800">{user.aadhaar}</span>
                                         </div>
                                     </div>
                                 </div>
                             ) : (
+<<<<<<< HEAD
                                 <p className="text-gray-500 italic">Farmer information not available</p>
                             )}
 
@@ -397,17 +652,31 @@ export default function ProductDetails() {
                                         }
                                     }}
                                     className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl border border-blue-500"
+=======
+                                <p className="text-gray-500 italic text-sm">Farmer information not available</p>
+                            )}
+
+                            {/* Contact Button */}
+                            <div className="mt-6 pt-4 border-t border-gray-200">
+                                <button
+                                    onClick={() => product?.farmerId && navigate(`/chat/${product.farmerId}`)}
+                                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+>>>>>>> new-feature
                                 >
                                     <MessageCircle className="w-5 h-5" />
                                     Contact Farmer
                                 </button>
                             </div>
                         </div>
+<<<<<<< HEAD
 
 
                     </div>
                     {/* Order Section - Only show for BUYER role */}
 
+=======
+                    </div>
+>>>>>>> new-feature
                 </div>
                 {userRole === "BUYER" && (
                     <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 mt-8 grid md:grid-cols-2 gap-8">

@@ -1,22 +1,39 @@
+<<<<<<< HEAD
 import { useEffect, useState } from "react";
+=======
+import { use, useEffect, useState } from "react";
+>>>>>>> new-feature
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Search, Filter, MapPin, Calendar, Package, IndianRupee, Heart, Star, Eye, MessageCircle, ShoppingCart, Sparkles, TrendingUp, Users, Leaf, Award } from 'lucide-react';
 import Cookies from 'js-cookie';
 import Header from "../components/Header";
 import { useAuth } from '../context/AuthContext';
+<<<<<<< HEAD
 
 export default function ProductListingList() {
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
+=======
+import { useTranslation } from "react-i18next";
+export default function ProductListingList() {
+    const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+    const { t } = useTranslation();
+>>>>>>> new-feature
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filters, setFilters] = useState({ village: '', name: '' });
     const [imageErrorMap, setImageErrorMap] = useState({});
     const [favorites, setFavorites] = useState(new Set());
+<<<<<<< HEAD
 
+=======
+    const baseUrl = "http://localhost:8089"
+    const userId = useAuth().userId;
+>>>>>>> new-feature
     useEffect(() => {
         const fetchListings = async () => {
             try {
@@ -28,7 +45,11 @@ export default function ProductListingList() {
                 if (filters.village) params.append('village', filters.village);
                 if (filters.name) params.append('name', filters.name);
 
+<<<<<<< HEAD
                 const url = `https://paripakv.onrender.com/listings${params.toString() ? `?${params.toString()}` : ''}`;
+=======
+                const url = `${import.meta.env.VITE_API_URL}/listings${params.toString() ? `?${params.toString()}` : ''}`;
+>>>>>>> new-feature
                 const response = await axios.get(url, {
                     headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                 });
@@ -79,8 +100,13 @@ export default function ProductListingList() {
                                 <Leaf className="w-10 h-10" />
                             </div>
                             <div className="text-yellow-200">
+<<<<<<< HEAD
                                 <h1 className="text-4xl md:text-6xl font-bold mb-2">Fresh Farm Products</h1>
                                 <p className="text-green-50 text-lg">Connect directly with local farmers • Fresh produce • Support community</p>
+=======
+                                <h1 className="text-4xl md:text-6xl font-bold mb-2">{t('freshFarmProducts')}</h1>
+                                <p className="text-green-50 text-lg">{t('connectMessage')}</p>
+>>>>>>> new-feature
                             </div>
                         </div>
 
@@ -91,11 +117,19 @@ export default function ProductListingList() {
                                     <div className="bg-white/20 p-2 rounded-lg">
                                         <Package className="w-5 h-5" />
                                     </div>
+<<<<<<< HEAD
                                     <span className="text-xs text-green-600 font-medium">FRESH</span>
                                 </div>
                                 <div>
                                     <p className="text-3xl font-bold mb-1">{listings.length}</p>
                                     <p className="text-sm font-medium text-green-800">Available Products</p>
+=======
+                                    <span className="text-xs text-green-600 font-medium">Fresh</span>
+                                </div>
+                                <div>
+                                    <p className="text-3xl font-bold mb-1">{listings.length}</p>
+                                    <p className="text-sm font-medium text-green-800">{t('availableProducts')}</p>
+>>>>>>> new-feature
                                 </div>
                             </div>
 
@@ -108,7 +142,11 @@ export default function ProductListingList() {
                                 </div>
                                 <div>
                                     <p className="text-3xl font-bold mb-1">500+</p>
+<<<<<<< HEAD
                                     <p className="text-sm font-medium text-green-800">Local Farmers</p>
+=======
+                                    <p className="text-sm font-medium text-green-800">{t('localFarmers')}</p>
+>>>>>>> new-feature
                                 </div>
                             </div>
 
@@ -121,7 +159,11 @@ export default function ProductListingList() {
                                 </div>
                                 <div>
                                     <p className="text-3xl font-bold mb-1">50+</p>
+<<<<<<< HEAD
                                     <p className="text-sm font-medium text-green-800">Villages Connected</p>
+=======
+                                    <p className="text-sm font-medium text-green-800">{t('villagesConnected')}</p>
+>>>>>>> new-feature
                                 </div>
                             </div>
                         </div>
@@ -137,7 +179,11 @@ export default function ProductListingList() {
                         <div className="bg-green-200 p-3 rounded-xl">
                             <Filter className="w-6 h-6 text-green-700" />
                         </div>
+<<<<<<< HEAD
                         <h2 className="text-2xl font-bold text-gray-800">Find Fresh Products</h2>
+=======
+                        <h2 className="text-2xl font-bold text-gray-800">{t('findFreshProducts')}</h2>
+>>>>>>> new-feature
                     </div>
 
                     <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
@@ -145,7 +191,11 @@ export default function ProductListingList() {
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                             <input
                                 type="text"
+<<<<<<< HEAD
                                 placeholder="Search by village name..."
+=======
+                                placeholder={t('searchByVillage')}
+>>>>>>> new-feature
                                 value={filters.village}
                                 onChange={(e) => setFilters({ ...filters, village: e.target.value })}
                                 className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
@@ -156,7 +206,11 @@ export default function ProductListingList() {
                             <Package className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                             <input
                                 type="text"
+<<<<<<< HEAD
                                 placeholder="Filter by product name..."
+=======
+                                placeholder={t('filterByName')}
+>>>>>>> new-feature
                                 value={filters.name}
                                 onChange={(e) => setFilters({ ...filters, name: e.target.value })}
                                 className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
@@ -164,7 +218,11 @@ export default function ProductListingList() {
                         </div>
 
                         <div className="bg-green-100 rounded-xl p-2 flex items-center gap-1">
+<<<<<<< HEAD
                             <span className="text-sm text-gray-600">Found:</span>
+=======
+                            <span className="text-sm text-gray-600">{t('found')}:</span>
+>>>>>>> new-feature
                             <span className="font-semibold text-green-800">{listings.length}</span>
                         </div>
                     </div>
@@ -214,6 +272,10 @@ export default function ProductListingList() {
                                 key={item.id || index}
                                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group"
                             >
+<<<<<<< HEAD
+=======
+
+>>>>>>> new-feature
                                 {/* Product Header */}
                                 <div className="bg-green-100 p-6 border-b border-gray-100">
                                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -277,7 +339,11 @@ export default function ProductListingList() {
                                                 </div>
                                             ) : (
                                                 <img
+<<<<<<< HEAD
                                                     src={item.imageUrl || "./assets/vegetable.png"}
+=======
+                                                    src={item.images?.[0]?.imageUrl ? `${baseUrl}${item.images[0].imageUrl}` : "./assets/vegetable.png"}
+>>>>>>> new-feature
                                                     alt={item.name}
                                                     onError={() => handleImageError(item.id)}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -372,9 +438,24 @@ export default function ProductListingList() {
                                         <button
                                             onClick={() => {
                                                 if (isAuthenticated) {
+<<<<<<< HEAD
                                                     item?.farmerId
                                                         ? navigate(`/chat/${item.farmerId}`)
                                                         : setError("Farmer contact information not available");
+=======
+                                                    if (item?.farmerId) {
+                                                        navigate(`/chat/${item.farmerId}/${item.id}`, {
+                                                            state: {
+                                                                otherUserName: item.farmerName,
+                                                                productName: item.name,
+                                                                productImage: item.images?.[0]?.imageUrl ? `${baseUrl}${item.images[0].imageUrl}` : null
+                                                            }
+                                                        });
+
+                                                    } else {
+                                                        setError("Farmer contact information not available");
+                                                    }
+>>>>>>> new-feature
                                                 } else {
                                                     navigate("/login");
                                                 }
@@ -382,7 +463,11 @@ export default function ProductListingList() {
                                             className="flex-1 sm:flex-none bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 group"
                                         >
                                             <MessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
+<<<<<<< HEAD
                                             {isAuthenticated ? 'Contact Farmer' : 'Login to Contact'}
+=======
+                                            {isAuthenticated ? "Contact Farmer" : "Login to Contact"}
+>>>>>>> new-feature
                                         </button>
 
                                         <button

@@ -10,4 +10,8 @@ class ParipakvApplicationTests {
 	void contextLoads() {
 	}
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> new-feature
 }

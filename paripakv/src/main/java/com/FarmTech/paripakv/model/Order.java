@@ -3,6 +3,10 @@ package com.FarmTech.paripakv.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+<<<<<<< HEAD
+=======
+import java.awt.*;
+>>>>>>> new-feature
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -38,4 +42,12 @@ public class Order {
 
     private String deliveryAddress;
 
+<<<<<<< HEAD
+=======
+    private String proofImageUrl;
+
+    private String otpCode;
+    private LocalDateTime otpExpiry;
+
+>>>>>>> new-feature
 }

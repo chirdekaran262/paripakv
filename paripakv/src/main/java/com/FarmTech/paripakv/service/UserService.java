@@ -7,16 +7,32 @@ import com.FarmTech.paripakv.model.UserRole;
 import com.FarmTech.paripakv.model.Users;
 import com.FarmTech.paripakv.repository.PasswordResetTokenRepository;
 import com.FarmTech.paripakv.repository.UserRepository;
+<<<<<<< HEAD
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.OneToOne;
+=======
+>>>>>>> new-feature
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+<<<<<<< HEAD
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+=======
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+>>>>>>> new-feature
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,15 +45,35 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder encoder;
     private final PasswordResetTokenRepository tokenRepo;
     private final EmailService emailService;
+<<<<<<< HEAD
 
+=======
+    private final String uploadDir="uploads/profile/";
+>>>>>>> new-feature
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return repo.findByEmail(email);
     }
 
+<<<<<<< HEAD
     public Users register(Users user) {
         user.setPassword(encoder.encode(user.getPassword()));
+=======
+    public Users register(Users user, MultipartFile profileImage) throws IOException {
+        System.out.println(user);
+        File dir = new File(uploadDir);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        String filename=UUID.randomUUID()+"_"+profileImage.getOriginalFilename();
+        System.out.println(filename);
+        Path path = Paths.get(uploadDir+filename);
+        Files.copy(profileImage.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
+        user.setImageUrl("/uploads/profile/"+filename);
+        user.setPassword(encoder.encode(user.getPassword()));
+        System.out.println(user.getImageUrl());
+>>>>>>> new-feature
         return repo.save(user);
     }
 
@@ -66,9 +102,27 @@ public class UserService implements UserDetailsService {
         return repo.save(user);
     }
 
+<<<<<<< HEAD
     public void completeProfile(CompleteProfileRequest updatedUser, String email) {
         Users user = repo.findByEmail(email);
 
+=======
+    public void completeProfile(CompleteProfileRequest updatedUser, String email,MultipartFile profileImage) throws IOException {
+        Users user = repo.findByEmail(email);
+
+        File dir = new File(uploadDir);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        String filename=UUID.randomUUID()+"_"+profileImage.getOriginalFilename();
+        System.out.println(filename);
+        Path path = Paths.get(uploadDir+filename);
+        Files.copy(profileImage.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
+        user.setImageUrl("/uploads/profile/"+filename);
+
+
+
+>>>>>>> new-feature
         user.setMobile(updatedUser.getMobile());
         user.setAadhaar(updatedUser.getAadhaar());
         user.setRole(updatedUser.getRole());

@@ -1,6 +1,14 @@
 package com.FarmTech.paripakv.service;
 
 
+<<<<<<< HEAD
+import com.FarmTech.paripakv.model.ProductListing;
+import com.FarmTech.paripakv.model.Users;
+import com.FarmTech.paripakv.repository.ProductListingRepository;
+import com.FarmTech.paripakv.repository.UserRepository;
+import org.springframework.stereotype.Service;
+
+=======
 import com.FarmTech.paripakv.model.ProductImage;
 import com.FarmTech.paripakv.model.ProductListing;
 import com.FarmTech.paripakv.dto.ProductListingDTO;
@@ -9,6 +17,7 @@ import com.FarmTech.paripakv.repository.ProductListingRepository;
 import com.FarmTech.paripakv.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+>>>>>>> new-feature
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,11 +27,25 @@ public class ProductListingService {
 
     private final ProductListingRepository repo;
     private final UserRepository userRepo;
+<<<<<<< HEAD
+
+    public ProductListingService(ProductListingRepository repo, UserRepository userRepo) {
+=======
     public ProductListingService(ProductListingRepository repo, UserRepository userRepo ) {
+>>>>>>> new-feature
         this.repo = repo;
         this.userRepo = userRepo;
     }
 
+<<<<<<< HEAD
+    public ProductListing save(ProductListing product, String email) {
+        Users farmer = userRepo.findByEmail(email);
+        product.setFarmerId(farmer.getId());
+        System.out.println(product);
+        return repo.save(product);
+    }
+
+=======
     public Object saveWithUrls(ProductListingDTO dto, Authentication auth) {
         try {
             ProductListing productListing = new ProductListing();
@@ -53,6 +76,7 @@ public class ProductListingService {
 
 
 
+>>>>>>> new-feature
     public List<ProductListing> getAll() {
         return repo.findAll();
     }

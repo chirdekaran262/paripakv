@@ -1,5 +1,11 @@
 package com.FarmTech.paripakv.model;
 
+<<<<<<< HEAD
+import jakarta.persistence.*;
+import lombok.Data;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+=======
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -10,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+>>>>>>> new-feature
 import java.util.UUID;
 
 @Entity
@@ -33,6 +40,8 @@ public class ProductListing {
     private LocalDate availableDate;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+<<<<<<< HEAD
+=======
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -41,4 +50,5 @@ public class ProductListing {
     private List<ProductImage> images = new ArrayList<>();
 
 
+>>>>>>> new-feature
 }

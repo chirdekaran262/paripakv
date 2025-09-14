@@ -1,13 +1,23 @@
 package com.FarmTech.paripakv.controller;
 
 import com.FarmTech.paripakv.model.ProductListing;
+<<<<<<< HEAD
+=======
 import com.FarmTech.paripakv.dto.ProductListingDTO;
+>>>>>>> new-feature
 import com.FarmTech.paripakv.service.ProductListingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+<<<<<<< HEAD
+import org.springframework.security.core.parameters.P;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+=======
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+>>>>>>> new-feature
 import java.util.UUID;
 
 @RestController
@@ -25,12 +36,25 @@ import java.util.UUID;
 public class ProductListingController {
 
     private final ProductListingService service;
+<<<<<<< HEAD
+
+=======
+>>>>>>> new-feature
     public ProductListingController(ProductListingService service) {
         this.service = service;
     }
 
     @PostMapping
     @PreAuthorize("hasRole('FARMER')")
+<<<<<<< HEAD
+    public ResponseEntity<ProductListing> createListing(@RequestBody ProductListing listing, Authentication auth) {
+        String email = auth.getName();
+        ProductListing createdListing = service.save(listing, email);
+        return new ResponseEntity<>(createdListing, HttpStatus.CREATED); // 201 Created
+    }
+
+
+=======
     public ResponseEntity<?> createListing(@RequestBody ProductListingDTO listing, Authentication auth) {
         try {
             return new ResponseEntity<>(service.saveWithUrls(listing, auth), HttpStatus.CREATED);
@@ -41,6 +65,7 @@ public class ProductListingController {
 
 
 
+>>>>>>> new-feature
     @GetMapping
     public ResponseEntity<List<ProductListing>> getAll(
             @RequestParam(required = false) String village,
@@ -74,6 +99,8 @@ public class ProductListingController {
 
         return new ResponseEntity<>(productListing,HttpStatus.OK);
     }
+<<<<<<< HEAD
+=======
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
@@ -93,4 +120,5 @@ public class ProductListingController {
         }
     }
 
+>>>>>>> new-feature
 }

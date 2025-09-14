@@ -3,7 +3,13 @@ import axios from 'axios';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Tractor, Phone, CreditCard, MapPin, Building, Flag, Hash, UserCheck, ArrowRight } from 'lucide-react';
 import Cookies from 'js-cookie';
+<<<<<<< HEAD
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
+=======
 
+>>>>>>> new-feature
 export default function CompleteProfile() {
     const [formData, setFormData] = useState({
         mobile: '',
@@ -15,24 +21,41 @@ export default function CompleteProfile() {
         pincode: '',
         role: 'FARMER' // Changed from role to userRole to match backend
     });
+<<<<<<< HEAD
+=======
     const [profileImage, setProfileImage] = useState(null);
 
 
+>>>>>>> new-feature
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+<<<<<<< HEAD
+    const query = useQuery();
+    const token = query.get('token');
+    Cookies.set('token', token, { expires: 7 }); // Ensure OAuth2 redirect handler is called
+=======
     const token = Cookies.get("token");
 
 
+>>>>>>> new-feature
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setMessage('');
 
         console.log('Submitting profile with token:', token);
+<<<<<<< HEAD
+        try {
+            await axios.put(`${import.meta.env.VITE_API_URL}/users/complete-profile`, formData, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            setMessage('Profile completed successfully! Redirecting...');
+=======
 
 
         try {
@@ -63,6 +86,7 @@ export default function CompleteProfile() {
 
             setMessage('Profile completed successfully! Redirecting...');
             alert('Profile completed successfully! Redirecting...');
+>>>>>>> new-feature
             setTimeout(() => {
                 navigate('/listings');
                 window.location.reload(); // Reload to ensure the new profile is reflected
@@ -70,7 +94,10 @@ export default function CompleteProfile() {
         } catch (err) {
             console.error('Profile update error:', err);
             setMessage(err.response?.data?.message || err.response?.data || 'Profile update failed. Please try again.');
+<<<<<<< HEAD
+=======
             alert("Profile update failed. Please try again.")
+>>>>>>> new-feature
         } finally {
             setIsLoading(false);
         }
@@ -289,6 +316,8 @@ export default function CompleteProfile() {
                                     />
                                 </div>
                             </div>
+<<<<<<< HEAD
+=======
                             {/* Profile Image Upload */}
                             <div className="space-y-1.5">
                                 <label className="block text-sm font-semibold text-green-800">Profile Image</label>
@@ -308,6 +337,7 @@ export default function CompleteProfile() {
                                     />
                                 </div>
                             </div>
+>>>>>>> new-feature
                         </div>
 
                         {/* Submit button */}

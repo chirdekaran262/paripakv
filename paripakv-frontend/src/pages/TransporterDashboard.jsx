@@ -42,7 +42,10 @@ import {
     DollarSign,
     Zap
 } from "lucide-react";
+<<<<<<< HEAD
+=======
 import { reloadResources } from "i18next";
+>>>>>>> new-feature
 
 export default function TransporterDashboard() {
     const [orders, setOrders] = useState([]);
@@ -69,9 +72,12 @@ export default function TransporterDashboard() {
     const [farmerDetails, setFarmerDetails] = useState({});
     const { userId } = useAuth();
     const token = Cookies.get("token");
+<<<<<<< HEAD
+=======
     const [selectedFile, setSelectedFile] = useState(null);
     const [otpSent, setOtpSent] = useState(false);
     const [otpCode, setOtpCode] = useState("");
+>>>>>>> new-feature
 
     // Enhanced fetch user details with caching
     const fetchUserDetails = useCallback(async (buyerId) => {
@@ -104,6 +110,10 @@ export default function TransporterDashboard() {
             return null;
         }
     }, [productDetails, token]);
+<<<<<<< HEAD
+    console.log("Fetched product details:", productDetails);
+=======
+>>>>>>> new-feature
     // Enhanced fetch farmer details with caching
     const fetchFarmerDetails = useCallback(async (farmerId) => {
         if (farmerDetails[farmerId]) return farmerDetails[farmerId];
@@ -189,8 +199,11 @@ export default function TransporterDashboard() {
         };
     };
 
+<<<<<<< HEAD
+=======
 
 
+>>>>>>> new-feature
     useEffect(() => {
         if (userId) {
             fetchOrders();
@@ -296,6 +309,29 @@ export default function TransporterDashboard() {
 
     // Enhanced upload delivery proof function
     const handleUploadProof = async (orderId, file) => {
+<<<<<<< HEAD
+        setUploadingProof(orderId);
+        try {
+            showNotification("Uploading delivery proof...", "info");
+
+            const formData = new FormData();
+            formData.append('proof', file);
+            formData.append('orderId', orderId);
+
+            await axios.post(`${import.meta.env.VITE_API_URL}/orders/${orderId}/proof`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            showNotification("Delivery proof uploaded successfully! 📸", "success");
+            setShowUploadModal(false);
+            fetchOrders();
+        } catch (error) {
+            console.error("Failed to upload proof:", error);
+            showNotification("Failed to upload delivery proof", "error");
+=======
         if (!file) {
             showNotification("Please select a file before uploading", "warning");
             return;
@@ -330,11 +366,14 @@ export default function TransporterDashboard() {
         } catch (error) {
             console.error("Failed to upload proof:", error);
             showNotification(error.response?.data?.message || "Failed to upload delivery proof", "error");
+>>>>>>> new-feature
         } finally {
             setUploadingProof(null);
         }
     };
 
+<<<<<<< HEAD
+=======
     async function sendOtp(orderId) {
         await axios.post(`${import.meta.env.VITE_API_URL}/orders/send-otp/${orderId}`, {}, {
             headers: { Authorization: `Bearer ${token}` }
@@ -357,6 +396,7 @@ export default function TransporterDashboard() {
 
 
 
+>>>>>>> new-feature
     // Enhanced notification system
     const showNotification = (message, type = "success") => {
         const notification = document.createElement('div');
@@ -455,6 +495,8 @@ export default function TransporterDashboard() {
         return actions[status];
     };
 
+<<<<<<< HEAD
+=======
     // const handlePayment = async (orderId) => {
     //     try {
     //         const response = await fetch("http://localhost:8089/api/payment/create-order", {
@@ -534,6 +576,7 @@ export default function TransporterDashboard() {
     };
 
 
+>>>>>>> new-feature
     // Enhanced loading state
     if (loading) {
         return (
@@ -914,6 +957,17 @@ export default function TransporterDashboard() {
                                                         <Award className="w-4 h-4" />
                                                     </div>
                                                 )}
+<<<<<<< HEAD
+
+                                                {order.deliveryStatus === "IN_TRANSIT" && (
+                                                    <button
+                                                        onClick={() => { setSelectedOrder(order); setShowUploadModal(true); }}
+                                                        className="flex-1 sm:flex-none bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                                                    >
+                                                        <Camera className="w-5 h-5" />
+                                                        Upload Proof
+                                                    </button>
+=======
                                                 {order.deliveryStatus === "DELIVERED" && !order.isPaid && (
                                                     <button
                                                         onClick={() => handlePayment(order.totalPrice + 275)} // Pass complete order object
@@ -992,6 +1046,7 @@ export default function TransporterDashboard() {
                                                             </div>
                                                         )}
                                                     </>
+>>>>>>> new-feature
                                                 )}
 
                                                 <button

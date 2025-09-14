@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 // import { createContext, useContext, useState, useEffect } from 'react';
 // import axios from 'axios';
 // import Cookies from 'js-cookie';
@@ -77,6 +79,7 @@
 
 // export const useAuth = () => useContext(AuthContext);
 
+>>>>>>> new-feature
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -89,6 +92,17 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState(null);
     const [currUserAddress, setCurrUserAddress] = useState(null);
+<<<<<<< HEAD
+    useEffect(() => {
+        const token = Cookies.get('token');
+        console.log('AuthProvider token:', token);
+        if (token) {
+            setIsAuthenticated(true);
+            axios.get(`${import.meta.env.VITE_API_URL}/users/profile`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+=======
     const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
@@ -99,13 +113,19 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(true);
             axios.get(`${import.meta.env.VITE_API_URL}/users/profile`, {
                 headers: { Authorization: `Bearer ${token}` }
+>>>>>>> new-feature
             })
                 .then(res => {
                     console.log("User role:", res.data.role);
                     setUserRole(res.data.role);
+<<<<<<< HEAD
+                    setUserId(res.data.id); // Store user ID
+                    setCurrUserAddress(res.data.address); // Store current user address
+=======
                     setUserId(res.data.id);
                     setCurrUserAddress(res.data.address);
                     setCurrentUser(res.data);
+>>>>>>> new-feature
                 })
                 .catch(err => {
                     console.error("Error fetching role:", err);
@@ -118,16 +138,40 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = (token) => {
+<<<<<<< HEAD
+        Cookies.set('token', token, {
+            expires: 7,
+            path: '/',
+        });
+        console.log('Token set in cookies:', token);
+        setIsAuthenticated(true);
+
+        // Fetch role immediately after login
+        axios.get('http://localhost:8089/users/profile', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+=======
         Cookies.set('token', token, { expires: 7, path: '/' });
         console.log('Token set in cookies:', token);
         setIsAuthenticated(true);
 
         axios.get(`${import.meta.env.VITE_API_URL}/users/profile`, {
             headers: { Authorization: `Bearer ${token}` }
+>>>>>>> new-feature
         })
             .then(res => {
                 console.log("Fetched role after login:", res.data.role);
                 setUserRole(res.data.role);
+<<<<<<< HEAD
+            })
+            .catch(err => {
+                console.error("Error fetching role after login:", err);
+            });
+    };
+
+
+=======
                 setUserId(res.data.id);
                 setCurrUserAddress(res.data.address);
                 setCurrentUser(res.data);
@@ -138,10 +182,17 @@ export const AuthProvider = ({ children }) => {
             .finally(() => setLoading(false));
     };
 
+>>>>>>> new-feature
     const logout = () => {
         Cookies.remove('token');
         setIsAuthenticated(false);
         setUserRole(null);
+<<<<<<< HEAD
+    };
+
+    return (
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, userRole, loading, userId, currUserAddress }}>
+=======
         setUserId(null);
         setCurrUserAddress(null);
         setCurrentUser(null);
@@ -151,6 +202,7 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider value={{
             isAuthenticated, login, logout, userRole, loading, userId, currUserAddress, currentUser
         }}>
+>>>>>>> new-feature
             {children}
         </AuthContext.Provider>
     );

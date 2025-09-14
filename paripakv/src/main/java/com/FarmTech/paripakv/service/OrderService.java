@@ -1,5 +1,18 @@
 package com.FarmTech.paripakv.service;
 
+<<<<<<< HEAD
+import com.FarmTech.paripakv.model.DeliveryStatus;
+import com.FarmTech.paripakv.model.Order;
+import com.FarmTech.paripakv.model.OrderStatus;
+import com.FarmTech.paripakv.model.ProductListing;
+import com.FarmTech.paripakv.repository.OrderRepository;
+import com.FarmTech.paripakv.repository.ProductListingRepository;
+import com.FarmTech.paripakv.repository.UserRepository;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+=======
 import com.FarmTech.paripakv.model.*;
 import com.FarmTech.paripakv.repository.OrderRepository;
 import com.FarmTech.paripakv.repository.ProductListingRepository;
@@ -26,6 +39,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+>>>>>>> new-feature
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,6 +50,13 @@ public class OrderService {
     private final OrderRepository repo;
     private final UserRepository userRepo;
     private final ProductListingRepository productListingRepo;
+<<<<<<< HEAD
+
+    public OrderService(OrderRepository repo, UserRepository userRepo, ProductListingRepository productListingRepo) {
+        this.repo = repo;
+        this.userRepo = userRepo;
+        this.productListingRepo = productListingRepo;
+=======
     private final String uploadDir = "uploads/proofs/";
     private final EmailService emailService;
     private final InvoiceGenerator invoiceGenerator;
@@ -48,6 +69,7 @@ public class OrderService {
         this.emailService = emailService;
         this.invoiceGenerator = invoiceGenerator;
         this.mailSender = mailSender;
+>>>>>>> new-feature
     }
 
     public Order placeOrder(Order order, String buyerEmail) {
@@ -137,6 +159,17 @@ public class OrderService {
 
 
     public List<Order> getOrdersByTransporterId(UUID transporterId) {
+<<<<<<< HEAD
+        return repo.findAllByTransporterId(transporterId);
+    }
+
+    public void inTransitOrder(UUID orderId) {
+        Order order = repo.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        order.setDeliveryStatus(DeliveryStatus.IN_TRANSIT);
+        repo.save(order);
+    }
+=======
         System.out.println(repo.findAllByTransporterId(transporterId));
         return repo.findAllByTransporterId(transporterId);
     }
@@ -326,4 +359,5 @@ public class OrderService {
     }
 
 
+>>>>>>> new-feature
 }

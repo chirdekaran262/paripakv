@@ -21,7 +21,11 @@ export default function ProductListingForm() {
         quantityKg: "",
         pricePerKg: "",
         villageName: "",
+<<<<<<< HEAD
+        AvailableDate: ""
+=======
         availableDate: ""
+>>>>>>> new-feature
     });
 
     const [suggestions, setSuggestions] = useState([]);
@@ -29,7 +33,11 @@ export default function ProductListingForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [locationLoading, setLocationLoading] = useState(false);
     const navigate = useNavigate();
+<<<<<<< HEAD
+
+=======
     const [images, setImages] = useState([]);
+>>>>>>> new-feature
     // Popular crop suggestions
     const popularCrops = [
         "🌾 Wheat", "🌽 Corn", "🍅 Tomato", "🥔 Potato", "🧅 Onion",
@@ -38,6 +46,10 @@ export default function ProductListingForm() {
 
     const handleChange = async (e) => {
         const { name, value } = e.target;
+<<<<<<< HEAD
+        setListing((prev) => ({ ...prev, [name]: value }));
+
+=======
 
         // Update form data
         setListing((prev) => ({
@@ -46,30 +58,47 @@ export default function ProductListingForm() {
         }));
 
         // Handle location suggestions for villageName
+>>>>>>> new-feature
         if (name === "villageName" && value.length > 2) {
             setLocationLoading(true);
             try {
                 const res = await axios.get("https://api.opencagedata.com/geocode/v1/json", {
                     params: {
+<<<<<<< HEAD
+                        key: "53cb118d16df41d0b048e5c954f567bb",
+=======
                         key: "53cb118d16df41d0b048e5c954f567bb", // Use your own API key
+>>>>>>> new-feature
                         q: value,
                         limit: 5,
                         countrycode: "in",
                         language: "en"
                     }
                 });
+<<<<<<< HEAD
+                const villageSuggestions = res.data.results.map(result => result.formatted);
+                setSuggestions(villageSuggestions);
+                setShowSuggestions(true);
+            } catch (err) {
+                console.error("Location fetch error:", err);
+=======
 
                 const villageSuggestions = res.data.results.map(result => result.formatted);
                 setSuggestions(villageSuggestions);
                 setShowSuggestions(true);
             } catch (error) {
                 console.error("Location fetch error:", error);
+>>>>>>> new-feature
                 setSuggestions([]);
                 setShowSuggestions(false);
             } finally {
                 setLocationLoading(false);
             }
         }
+<<<<<<< HEAD
+    };
+
+=======
 
         // Hide suggestions if input is too short
         if (name === "villageName" && value.length <= 2) {
@@ -79,11 +108,14 @@ export default function ProductListingForm() {
     };
 
 
+>>>>>>> new-feature
     const handleSuggestionClick = (suggestion) => {
         setListing((prev) => ({ ...prev, villageName: suggestion }));
         setSuggestions([]);
         setShowSuggestions(false);
     };
+<<<<<<< HEAD
+=======
     const handleRemoveImage = (index) => {
         setImages((prevImages) => prevImages.filter((_, i) => i !== index));
     };
@@ -181,12 +213,38 @@ export default function ProductListingForm() {
     };
 
 
+>>>>>>> new-feature
 
     const handleCropSuggestionClick = (crop) => {
         const cleanCrop = crop.split(' ').slice(1).join(' '); // Remove emoji
         setListing((prev) => ({ ...prev, name: cleanCrop }));
     };
 
+<<<<<<< HEAD
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        const token = Cookies.get("token");
+
+        try {
+            await axios.post(`${import.meta.env.VITE_API_URL}/listings`, listing, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            // Success animation delay
+            setTimeout(() => {
+                alert("✅ Listing Created Successfully!");
+                navigate("/");
+            }, 1000);
+        } catch (error) {
+            console.error("Failed to create listing", error);
+            alert(error.response?.data?.message || "❌ Failed to create listing");
+            setIsLoading(false);
+        }
+    };
+=======
     // const handleSubmit = async (e) => {
     //     e.preventDefault();
     //     setIsLoading(true);
@@ -210,6 +268,7 @@ export default function ProductListingForm() {
     //         setIsLoading(false);
     //     }
     // };
+>>>>>>> new-feature
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300">
@@ -331,7 +390,11 @@ export default function ProductListingForm() {
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-600 font-semibold">/kg</span>
                                     </div>
                                     <div className="bg-emerald-50/50 rounded-xl p-3 border border-emerald-200">
+<<<<<<< HEAD
+                                        <p className="text-sm text-emerald-700">💡 Set a competitive price based on market rates</p>
+=======
                                         <p className="text-sm text-red-400 text-emerald-700">💡 Set a competitive price based on market rates</p>
+>>>>>>> new-feature
                                     </div>
                                 </div>
                             </div>
@@ -398,14 +461,25 @@ export default function ProductListingForm() {
 
                                 <input
                                     type="date"
+<<<<<<< HEAD
+                                    name="AvailableDate"
+                                    value={listing.AvailableDate}
+=======
                                     name="availableDate"
                                     value={listing.availableDate}
+>>>>>>> new-feature
                                     onChange={handleChange}
                                     min={new Date().toISOString().split('T')[0]}
                                     required
                                     className="w-full px-6 py-4 rounded-2xl border-2 border-orange-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-200 focus:outline-none transition-all duration-300 text-lg bg-white/80 backdrop-blur-sm shadow-inner"
                                 />
 
+<<<<<<< HEAD
+                                <div className="bg-orange-50/50 rounded-xl p-3 border border-orange-200">
+                                    <p className="text-sm text-orange-700">⏰ Choose the date when your produce will be ready for harvest/delivery</p>
+                                </div>
+                            </div>
+=======
                                 <div className="bg-orange-50/50 rounded-xl text-red-400 p-3 border border-orange-200">
                                     <p className="text-sm text-orange-700">⏰ Choose the date when your produce will be ready for harvest/delivery</p>
                                 </div>
@@ -453,6 +527,7 @@ export default function ProductListingForm() {
                                 </div>
                             </div>
 
+>>>>>>> new-feature
 
                             {/* Submit Button */}
                             <div className="pt-8">

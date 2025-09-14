@@ -36,6 +36,8 @@ target/
 *.iml
 .idea/
 *.env
+<<<<<<< HEAD
+=======
 <<<<<<< Updated upstream
 /application.properties
 =======
@@ -43,3 +45,4 @@ target/
 >>>>>>> Stashed changes
 
 uploads/
+>>>>>>> new-feature

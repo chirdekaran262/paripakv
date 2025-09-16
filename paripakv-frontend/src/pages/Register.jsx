@@ -3,10 +3,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { Tractor, UserPlus, Mail, Lock, User, Phone, CreditCard } from 'lucide-react';
 import googleIcon from '../assets/google.svg'; // Ensure this path is correct
-<<<<<<< HEAD
-=======
 import { useTranslation } from 'react-i18next';
->>>>>>> new-feature
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -23,34 +20,18 @@ export default function Register() {
         state: '',
         pincode: ''
     });
-<<<<<<< HEAD
 
-    const navigate = useNavigate();
 
-=======
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [profileImage, setProfileImage] = useState(null);
->>>>>>> new-feature
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-<<<<<<< HEAD
-        try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/register`, formData);
-            console.log(response.data);
-            alert('Registration successful!');
-            navigate('/login');
-        } catch (err) {
-            alert(err.response?.data || 'Registration failed');
-        }
-    };
-
-=======
-
+        
         try {
             const formDataToSend = new FormData();
 
@@ -86,8 +67,7 @@ export default function Register() {
 
 
 
->>>>>>> new-feature
-    const handleGoogleLogin = () => {
+     const handleGoogleLogin = () => {
         window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`;
         console.log(window.location.href);
     };
@@ -106,21 +86,13 @@ export default function Register() {
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
                     <h1 className="text-2xl font-bold flex items-center gap-3">
                         <Tractor className="w-7 h-7 text-green-800" />
-<<<<<<< HEAD
-                        <span className="text-green-800">Paripak</span>
-=======
                         <span className="text-green-800">{t('appName')}</span>
->>>>>>> new-feature
                     </h1>
                     <Link
                         to="/login"
                         className="px-6 py-2 bg-white/20 hover:bg-white/30 rounded-full transition-all duration-300 text-green-800 font-medium backdrop-blur-lg"
                     >
-<<<<<<< HEAD
-                        Sign In
-=======
                         {t('signin')}
->>>>>>> new-feature
                     </Link>
                 </div>
             </nav>
@@ -128,13 +100,8 @@ export default function Register() {
             {/* Main content */}
             <div className="flex-1 flex items-center justify-center p-6 relative z-10">
                 <div className="bg-gradient-to-br from-green-200 via-blue-50 to-yellow-400 backdrop-blur-md rounded-2xl shadow-xl p-8 w-full max-w-md border border-white/50 hover:bg-white/85 transition-all duration-300">
-<<<<<<< HEAD
-                    <h2 className="text-3xl font-bold text-green-800 mb-3 text-center">Create Account 🌾</h2>
-                    <p className="text-sm text-green-700 mb-8 text-center">Join Paripak as a Farmer, Buyer, or Transporter</p>
-=======
                     <h2 className="text-3xl font-bold text-green-800 mb-3 text-center">{t('createAccount')} 🌾</h2>
                     <p className="text-sm text-green-700 mb-8 text-center">{t('')} Paripak as a Farmer, Buyer, or Transporter</p>
->>>>>>> new-feature
 
                     {/* Google button */}
                     <button
@@ -142,11 +109,7 @@ export default function Register() {
                         className="w-full bg-white/90 hover:bg-white border border-white/50 text-white hover:text-black font-medium py-2.5 rounded-xl flex items-center justify-center gap-3 transition-all duration-300 shadow-sm hover:shadow"
                     >
                         <img src={googleIcon} alt="Google" className="w-5 h-5" />
-<<<<<<< HEAD
-                        Continue with Google
-=======
                         {t('continueWithGoogle')}
->>>>>>> new-feature
                     </button>
 
                     {/* Divider */}
@@ -155,24 +118,16 @@ export default function Register() {
                             <div className="w-full border-t border-green-700"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-<<<<<<< HEAD
-                            <span className="px-4 bg-white text-green-700 rounded-full">Or register with email</span>
-=======
-                            <span className="px-4 bg-white text-green-700 rounded-full">{t('orRegisterWithEmail')}</span>
->>>>>>> new-feature
-                        </div>
+                             <span className="px-4 bg-white text-green-700 rounded-full">{t('orRegisterWithEmail')}</span>
+                         </div>
                     </div>
 
                     {/* Form inputs - update all input containers with this pattern */}
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {/* Full Name */}
                         <div className="space-y-1.5">
-<<<<<<< HEAD
-                            <label className="block text-sm font-semibold text-green-800">Full Name</label>
-=======
                             <label className="block text-sm font-semibold text-green-800">{t('fullName')}</label>
->>>>>>> new-feature
-                            <div className="relative flex items-center group">
+                             <div className="relative flex items-center group">
                                 <User className="absolute left-3 text-green-600/70 w-5 h-5 group-hover:text-green-700 transition-colors duration-200" />
                                 <input
                                     type="text"
@@ -186,12 +141,8 @@ export default function Register() {
                             </div>
                         </div>
                         <div className="space-y-1.5">
-<<<<<<< HEAD
-                            <label className="block text-sm font-semibold text-green-800">Email</label>
-=======
-                            <label className="block text-sm font-semibold text-green-800">{t('email')}</label>
->>>>>>> new-feature
-                            <div className="relative flex items-center group">
+                              <label className="block text-sm font-semibold text-green-800">{t('email')}</label>
+                             <div className="relative flex items-center group">
                                 <Mail className="absolute left-3 text-green-600/70 w-5 h-5 group-hover:text-green-700 transition-colors duration-200" />
                                 <input
                                     type="email"
@@ -207,12 +158,8 @@ export default function Register() {
 
                         {/* Mobile Number */}
                         <div className="space-y-1.5">
-<<<<<<< HEAD
-                            <label className="block text-sm font-semibold text-green-800">Mobile Number</label>
-=======
-                            <label className="block text-sm font-semibold text-green-800">{t('mobile')}</label>
->>>>>>> new-feature
-                            <div className="relative flex items-center group">
+                              <label className="block text-sm font-semibold text-green-800">{t('mobile')}</label>
+                             <div className="relative flex items-center group">
                                 <Phone className="absolute left-3 text-green-600/70 w-5 h-5 group-hover:text-green-700 transition-colors duration-200" />
                                 <input
                                     type="tel"
@@ -228,12 +175,8 @@ export default function Register() {
 
                         {/* Aadhaar Number */}
                         <div className="space-y-1.5">
-<<<<<<< HEAD
-                            <label className="block text-sm font-semibold text-green-800">Aadhaar Number</label>
-=======
-                            <label className="block text-sm font-semibold text-green-800">{t('aadhaar')}</label>
->>>>>>> new-feature
-                            <div className="relative flex items-center group">
+                              <label className="block text-sm font-semibold text-green-800">{t('aadhaar')}</label>
+                             <div className="relative flex items-center group">
                                 <CreditCard className="absolute left-3 text-green-600/70 w-5 h-5 group-hover:text-green-700 transition-colors duration-200" />
                                 <input
                                     type="text"
@@ -249,12 +192,8 @@ export default function Register() {
 
                         {/* Role Selection specific update */}
                         <div className="">
-<<<<<<< HEAD
-                            <label className="block text-sm font-semibold text-green-800">Select Role</label>
-=======
-                            <label className="block text-sm font-semibold text-green-800">{t('')}</label>
->>>>>>> new-feature
-                            <div className="relative flex items-center group">
+                             <label className="block text-sm font-semibold text-green-800">{t('')}</label>
+                             <div className="relative flex items-center group">
                                 <div className="absolute left-3 text-white-800 w-5 h-5 pointer-events-none">
                                     {formData.role === 'FARMER' && '🌾'}
                                     {formData.role === 'BUYER' && '🛒'}
@@ -267,16 +206,10 @@ export default function Register() {
                                     className="w-full pl-12 pr-10 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none text-white-800 appearance-none transition-all duration-200"
                                     required
                                 >
-<<<<<<< HEAD
-                                    <option value="FARMER" className="py-2 text-white-800">Farmer</option>
-                                    <option value="BUYER" className="py-2 text-white-800">Buyer</option>
-                                    <option value="TRANSPORTER" className="py-2 text-white-800">Transporter</option>
-=======
-                                    <option value="FARMER" className="py-2 text-white-800">{t('farmer')}</option>
+                                     <option value="FARMER" className="py-2 text-white-800">{t('farmer')}</option>
                                     <option value="BUYER" className="py-2 text-white-800">{t('buyer')}</option>
                                     <option value="TRANSPORTER" className="py-2 text-white-800">{t('transporter')}</option>
->>>>>>> new-feature
-                                </select>
+                                 </select>
                                 <div className="absolute right-3 pointer-events-none">
                                     <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -287,12 +220,8 @@ export default function Register() {
 
                         {/* Password */}
                         <div className="space-y-1.5">
-<<<<<<< HEAD
-                            <label className="block text-sm font-semibold text-green-800">Password</label>
-=======
-                            <label className="block text-sm font-semibold text-green-800">{t('password')}</label>
->>>>>>> new-feature
-                            <div className="relative flex items-center">
+                             <label className="block text-sm font-semibold text-green-800">{t('password')}</label>
+                             <div className="relative flex items-center">
                                 <Lock className="absolute left-3 text-green-600/70 w-5 h-5" />
                                 <input
                                     type="password"
@@ -307,12 +236,8 @@ export default function Register() {
                         </div>
                         {/* Address */}
                         <div className="space-y-1.5">
-<<<<<<< HEAD
-                            <label className="block text-sm font-semibold text-green-800">Address</label>
-=======
-                            <label className="block text-sm font-semibold text-green-800">{t('address')}</label>
->>>>>>> new-feature
-                            <input
+                             <label className="block text-sm font-semibold text-green-800">{t('address')}</label>
+                             <input
                                 type="text"
                                 name="address"
                                 value={formData.address}
@@ -325,12 +250,8 @@ export default function Register() {
 
                         {/* Village */}
                         <div className="space-y-1.5">
-<<<<<<< HEAD
-                            <label className="block text-sm font-semibold text-green-800">Village</label>
-=======
-                            <label className="block text-sm font-semibold text-green-800">{t('village')}</label>
->>>>>>> new-feature
-                            <input
+                              <label className="block text-sm font-semibold text-green-800">{t('village')}</label>
+                             <input
                                 type="text"
                                 name="village"
                                 value={formData.village}
@@ -343,12 +264,8 @@ export default function Register() {
 
                         {/* District */}
                         <div className="space-y-1.5">
-<<<<<<< HEAD
-                            <label className="block text-sm font-semibold text-green-800">District</label>
-=======
-                            <label className="block text-sm font-semibold text-green-800">{t('district')}</label>
->>>>>>> new-feature
-                            <input
+                              <label className="block text-sm font-semibold text-green-800">{t('district')}</label>
+                             <input
                                 type="text"
                                 name="district"
                                 value={formData.district}
@@ -361,12 +278,8 @@ export default function Register() {
 
                         {/* State */}
                         <div className="space-y-1.5">
-<<<<<<< HEAD
-                            <label className="block text-sm font-semibold text-green-800">State</label>
-=======
-                            <label className="block text-sm font-semibold text-green-800">{t('state')}</label>
->>>>>>> new-feature
-                            <input
+                              <label className="block text-sm font-semibold text-green-800">{t('state')}</label>
+                             <input
                                 type="text"
                                 name="state"
                                 value={formData.state}
@@ -379,12 +292,8 @@ export default function Register() {
 
                         {/* Pincode */}
                         <div className="space-y-1.5">
-<<<<<<< HEAD
-                            <label className="block text-sm font-semibold text-green-800">Pincode</label>
-=======
-                            <label className="block text-sm font-semibold text-green-800">{t('pincode')}</label>
->>>>>>> new-feature
-                            <input
+                              <label className="block text-sm font-semibold text-green-800">{t('pincode')}</label>
+                             <input
                                 type="text"
                                 name="pincode"
                                 value={formData.pincode}
@@ -394,9 +303,7 @@ export default function Register() {
                                 required
                             />
                         </div>
-<<<<<<< HEAD
-=======
-                        {/* Profile Image Upload */}
+                         {/* Profile Image Upload */}
                         <div className="space-y-1.5">
                             <label className="block text-sm font-semibold text-green-800">Profile Image</label>
                             <div className="relative flex items-center group">
@@ -415,34 +322,27 @@ export default function Register() {
                                 />
                             </div>
                         </div>
->>>>>>> new-feature
-
+ 
                         {/* Submit button */}
                         <button
                             type="submit"
                             className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-green-600/20 hover:shadow-xl"
+
                         >
                             <UserPlus className="w-5 h-5" />
-<<<<<<< HEAD
-                            Create Account
-=======
-                            {t('createAccount')}
->>>>>>> new-feature
-                        </button>
+                              {t('createAccount')}
+                         </button>
                     </form>
 
                     {/* Footer text */}
                     <p className="text-sm text-center mt-6 text-green-700">
-<<<<<<< HEAD
-                        Already have an account?{' '}
+                         Already have an account?{' '}
                         <Link to="/login" className="text-green-800 font-semibold hover:text-green-900 transition-colors duration-200">
-                            Sign In
-=======
-                        {t('alreadyHaveAccount')}{' '}
+                        </Link>
+                          {t('alreadyHaveAccount')}{' '}
                         <Link to="/login" className="text-green-800 font-semibold hover:text-green-900 transition-colors duration-200">
                             {t('signin')}
->>>>>>> new-feature
-                        </Link>
+                         </Link>
                     </p>
                 </div>
             </div>

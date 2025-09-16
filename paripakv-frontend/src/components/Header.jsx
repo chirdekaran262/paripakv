@@ -1,17 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-<<<<<<< HEAD
-    Tractor, LogIn, Plus, User, Menu, Bell, Settings, Home, Grid3X3, Info
-} from "lucide-react";
-import { useAuth } from "../context/AuthContext";
-=======
-    Tractor, LogIn, Plus, User, Menu, Bell, Settings, Home, Grid3X3, Info, MessageCircle
+    Tractor, LogIn, Plus, User, Menu, Bell, Settings, Home, Grid3X3, Info, MessageCircle, X
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import MessagesIcon from "./MessagesIcon";
->>>>>>> new-feature
 
 export default function Header() {
     const navigate = useNavigate();
@@ -20,11 +14,8 @@ export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
     const dropdownRef = useRef(null);
-<<<<<<< HEAD
-
-=======
     const { t } = useTranslation();
->>>>>>> new-feature
+
     const handleLogout = () => {
         logout();
         navigate("/");
@@ -43,7 +34,7 @@ export default function Header() {
     if (loading) return null;
 
     return (
-        <nav className="sticky top-0 z-50 bg-gradient-to-br from-green-600 via-lime-100 to-yellow-200  backdrop-blur-xl border-b border-gray-200 shadow-sm ">
+        <nav className="sticky top-0 z-50 bg-gradient-to-br from-green-600 via-lime-100 to-yellow-200 backdrop-blur-xl border-b border-gray-200 shadow-sm">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
 
@@ -54,15 +45,10 @@ export default function Header() {
                                 <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-green-50 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                                     <Tractor className="w-6 h-6 text-green-700" />
                                 </div>
-                                {/* <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-amber-100 to-orange-200 rounded-full border-2 border-white shadow-sm"></div> */}
                             </div>
                             <div className="flex flex-col">
                                 <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 via-green-50 to-orange-500 bg-clip-text text-transparent transition-all duration-300 group-hover:scale-105">
-<<<<<<< HEAD
-                                    Paripakv
-=======
                                     {t('appName')}
->>>>>>> new-feature
                                 </h1>
                                 <p className="text-sm text-gray-900 font-medium -mt-1">Farm to Market</p>
                             </div>
@@ -72,31 +58,6 @@ export default function Header() {
                     {/* RIGHT SIDE - Everything Else */}
                     <div className="flex items-center space-x-6">
 
-                        {/* Navigation Links - Desktop Only */}
-                        {/* <div className="hidden lg:flex items-center space-x-2">
-                            <Link
-                                to="/"
-                                className="flex items-center space-x-2 px-4 py-2.5 rounded-full text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all duration-200 font-medium"
-                            >
-                                <Home className="w-4 h-4" />
-                                <span>Products</span>
-                            </Link>
-                            <Link
-                                to="/categories"
-                                className="flex items-center space-x-2 px-4 py-2.5 rounded-full text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all duration-200 font-medium"
-                            >
-                                <Grid3X3 className="w-4 h-4" />
-                                <span>Categories</span>
-                            </Link>
-                            <Link
-                                to="/how-it-works"
-                                className="flex items-center space-x-2 px-4 py-2.5 rounded-full text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all duration-200 font-medium"
-                            >
-                                <Info className="w-4 h-4" />
-                                <span>How it Works</span>
-                            </Link>
-                        </div> */}
-
                         {/* User Actions & Profile Section */}
                         <div className="flex items-center space-x-4">
 
@@ -104,17 +65,6 @@ export default function Header() {
                             {isAuthenticated && (
                                 <>
                                     <div className="hidden md:flex items-center space-x-3">
-<<<<<<< HEAD
-                                        {userRole === "BUYER" && (
-                                            <Link
-                                                to={`/buyer-orders/${userId}`}
-                                                className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300 hover:from-amber-600 hover:to-orange-600 text-white px-5 py-2.5 rounded-full flex items-center space-x-2 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 hover:text-black"
-                                            >
-                                                <span>📦</span>
-                                                <span>My Orders</span>
-                                            </Link>
-=======
-
                                         {userRole === "BUYER" && (
                                             <>
                                                 <Link
@@ -126,7 +76,6 @@ export default function Header() {
                                                 </Link>
                                                 <MessagesIcon className="w-5 h-5 text-green-700" />
                                             </>
->>>>>>> new-feature
                                         )}
 
                                         {userRole === "FARMER" && (
@@ -145,17 +94,7 @@ export default function Header() {
                                                     <span>📦</span>
                                                     <span>Orders</span>
                                                 </Link>
-<<<<<<< HEAD
-=======
-                                                {/* <Link
-                                                    to={`/chat/farmer/${userId}`}
-                                                    className="p-3 bg-green-50 rounded-full hover:bg-green-100 transition-all duration-200"
-                                                    title="Messages"
-                                                >
-                                                    <MessageCircle className="w-5 h-5 text-green-700" />
-                                                </Link> */}
                                                 <MessagesIcon className="w-5 h-5 text-green-700" />
->>>>>>> new-feature
                                             </>
                                         )}
 
@@ -294,9 +233,14 @@ export default function Header() {
                             {/* Mobile Menu Button */}
                             <button
                                 onClick={() => setMenuOpen(!menuOpen)}
-                                className="lg:hidden w-11 h-11 bg-gray-100 hover:bg-green-100 rounded-full flex items-center justify-center transition-all duration-200"
+                                className="lg:hidden relative p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
+                                aria-label={menuOpen ? "Close menu" : "Open menu"}
                             >
-                                <Menu className="w-5 h-5 text-gray-600" />
+                                {menuOpen ? (
+                                    <X className="w-6 h-6 text-gray-600" />
+                                ) : (
+                                    <Menu className="w-6 h-6 text-gray-600" />
+                                )}
                             </button>
                         </div>
                     </div>
@@ -307,33 +251,6 @@ export default function Header() {
             {menuOpen && (
                 <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
                     <div className="px-6 py-6 space-y-4">
-                        {/* Navigation Links */}
-                        {/* <div className="space-y-2">
-                            <Link
-                                to="/"
-                                className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all duration-200"
-                                onClick={() => setMenuOpen(false)}
-                            >
-                                <Home className="w-5 h-5" />
-                                <span className="font-medium">Browse Products</span>
-                            </Link>
-                            <Link
-                                to="/categories"
-                                className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all duration-200"
-                                onClick={() => setMenuOpen(false)}
-                            >
-                                <Grid3X3 className="w-5 h-5" />
-                                <span className="font-medium">Categories</span>
-                            </Link>
-                            <Link
-                                to="/how-it-works"
-                                className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all duration-200"
-                                onClick={() => setMenuOpen(false)}
-                            >
-                                <Info className="w-5 h-5" />
-                                <span className="font-medium">How it Works</span>
-                            </Link>
-                        </div> */}
 
                         {isAuthenticated ? (
                             <>
@@ -380,17 +297,6 @@ export default function Header() {
                                             >
                                                 📦 Manage Orders
                                             </Link>
-<<<<<<< HEAD
-=======
-                                            {/* <Link
-                                                to={`/chat/farmer/${userId}`}
-                                                className="p-3 bg-green-50 rounded-full hover:bg-green-100 transition-all duration-200"
-                                                title="Messages"
-                                            >
-                                                
-                                            </Link> */}
-                                            <MessageCircle className="w-5 h-5 text-green-700" />
->>>>>>> new-feature
                                         </>
                                     )}
 
@@ -419,13 +325,35 @@ export default function Header() {
                                             </Link>
                                         </>
                                     )}
+
+                                    {/* Messages for BUYER and FARMER in mobile */}
+                                    {(userRole === "BUYER" || userRole === "FARMER") && (
+                                        <div className="flex items-center justify-center bg-gray-100 rounded-2xl hover:bg-gray-300">
+                                            <MessagesIcon className="w-6 h-4 text-emerald-600" />
+                                            {/* <span className="ml-2 text-gray-700 font-medium">Messages</span> */}
+                                            {/* <span className="ml-auto w-2 h-2 bg-red-500 rounded-full"></span> */}
+                                        </div>
+                                    )}
+
+                                    {/* Notifications for mobile */}
+                                    <button
+                                        onClick={() => {
+                                            setShowNotifications(!showNotifications);
+                                            setMenuOpen(false);
+                                        }}
+                                        className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition-all duration-200"
+                                    >
+                                        <Bell className="w-5 h-5" />
+                                        <span className="font-medium">Notifications</span>
+                                        <span className="ml-auto w-2 h-2 bg-red-500 rounded-full"></span>
+                                    </button>
                                 </div>
 
                                 {/* Profile Actions */}
                                 <div className="border-t border-gray-200 pt-4 space-y-2">
                                     <Link
                                         to="/profile"
-                                        className="flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all duration-200"
+                                        className="flex items-center space-x-3 px-4 py-3 rounded-xl bg-green-100 text-gray-700 hover:bg-green-300 hover:text-green-600 transition-all duration-200"
                                         onClick={() => setMenuOpen(false)}
                                     >
                                         <User className="w-5 h-5" />

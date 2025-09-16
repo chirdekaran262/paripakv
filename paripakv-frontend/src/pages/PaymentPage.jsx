@@ -5,7 +5,7 @@ function PaymentPage() {
 
   // ✅ Create Razorpay order
   const createOrder = async () => {
-    const res = await fetch("http://localhost:8089/api/payment/create-order", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/payment/create-order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount: amount }),

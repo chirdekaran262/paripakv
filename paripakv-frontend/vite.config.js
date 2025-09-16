@@ -10,11 +10,9 @@ export default defineConfig({
   // Optional for local dev
   server: {
     historyApiFallback: true,
-<<<<<<< HEAD
-=======
+
   },
   define: {
     global: "window",
->>>>>>> new-feature
   }
 })

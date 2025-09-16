@@ -42,10 +42,7 @@ import {
     DollarSign,
     Zap
 } from "lucide-react";
-<<<<<<< HEAD
-=======
-import { reloadResources } from "i18next";
->>>>>>> new-feature
+// import { reloadResources } from "i18next";
 
 export default function TransporterDashboard() {
     const [orders, setOrders] = useState([]);
@@ -72,12 +69,9 @@ export default function TransporterDashboard() {
     const [farmerDetails, setFarmerDetails] = useState({});
     const { userId } = useAuth();
     const token = Cookies.get("token");
-<<<<<<< HEAD
-=======
     const [selectedFile, setSelectedFile] = useState(null);
     const [otpSent, setOtpSent] = useState(false);
     const [otpCode, setOtpCode] = useState("");
->>>>>>> new-feature
 
     // Enhanced fetch user details with caching
     const fetchUserDetails = useCallback(async (buyerId) => {
@@ -110,10 +104,6 @@ export default function TransporterDashboard() {
             return null;
         }
     }, [productDetails, token]);
-<<<<<<< HEAD
-    console.log("Fetched product details:", productDetails);
-=======
->>>>>>> new-feature
     // Enhanced fetch farmer details with caching
     const fetchFarmerDetails = useCallback(async (farmerId) => {
         if (farmerDetails[farmerId]) return farmerDetails[farmerId];
@@ -199,11 +189,9 @@ export default function TransporterDashboard() {
         };
     };
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> new-feature
+
     useEffect(() => {
         if (userId) {
             fetchOrders();
@@ -309,36 +297,7 @@ export default function TransporterDashboard() {
 
     // Enhanced upload delivery proof function
     const handleUploadProof = async (orderId, file) => {
-<<<<<<< HEAD
         setUploadingProof(orderId);
-        try {
-            showNotification("Uploading delivery proof...", "info");
-
-            const formData = new FormData();
-            formData.append('proof', file);
-            formData.append('orderId', orderId);
-
-            await axios.post(`${import.meta.env.VITE_API_URL}/orders/${orderId}/proof`, formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-
-            showNotification("Delivery proof uploaded successfully! 📸", "success");
-            setShowUploadModal(false);
-            fetchOrders();
-        } catch (error) {
-            console.error("Failed to upload proof:", error);
-            showNotification("Failed to upload delivery proof", "error");
-=======
-        if (!file) {
-            showNotification("Please select a file before uploading", "warning");
-            return;
-        }
-
-        setUploadingProof(orderId);
-
         try {
             const formData = new FormData();
             formData.append('File', file); // matches your backend param
@@ -366,14 +325,11 @@ export default function TransporterDashboard() {
         } catch (error) {
             console.error("Failed to upload proof:", error);
             showNotification(error.response?.data?.message || "Failed to upload delivery proof", "error");
->>>>>>> new-feature
         } finally {
             setUploadingProof(null);
         }
     };
 
-<<<<<<< HEAD
-=======
     async function sendOtp(orderId) {
         await axios.post(`${import.meta.env.VITE_API_URL}/orders/send-otp/${orderId}`, {}, {
             headers: { Authorization: `Bearer ${token}` }
@@ -396,7 +352,6 @@ export default function TransporterDashboard() {
 
 
 
->>>>>>> new-feature
     // Enhanced notification system
     const showNotification = (message, type = "success") => {
         const notification = document.createElement('div');
@@ -495,8 +450,6 @@ export default function TransporterDashboard() {
         return actions[status];
     };
 
-<<<<<<< HEAD
-=======
     // const handlePayment = async (orderId) => {
     //     try {
     //         const response = await fetch("http://localhost:8089/api/payment/create-order", {
@@ -539,7 +492,7 @@ export default function TransporterDashboard() {
     const handlePayment = async (amount) => {
         try {
             // 1. Ask backend to create order
-            const res = await fetch("http://localhost:8089/api/payment/create-order", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/payment/create-order`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
                 body: JSON.stringify({ amount }) // Rs. 500
@@ -576,7 +529,6 @@ export default function TransporterDashboard() {
     };
 
 
->>>>>>> new-feature
     // Enhanced loading state
     if (loading) {
         return (
@@ -957,7 +909,6 @@ export default function TransporterDashboard() {
                                                         <Award className="w-4 h-4" />
                                                     </div>
                                                 )}
-<<<<<<< HEAD
 
                                                 {order.deliveryStatus === "IN_TRANSIT" && (
                                                     <button
@@ -967,7 +918,8 @@ export default function TransporterDashboard() {
                                                         <Camera className="w-5 h-5" />
                                                         Upload Proof
                                                     </button>
-=======
+                                                )}
+
                                                 {order.deliveryStatus === "DELIVERED" && !order.isPaid && (
                                                     <button
                                                         onClick={() => handlePayment(order.totalPrice + 275)} // Pass complete order object
@@ -1009,6 +961,7 @@ export default function TransporterDashboard() {
                                                                 onClick={async () => {
                                                                     await handleUploadProof(order.id, selectedFile);
                                                                     // Send OTP after successful upload
+                                                                    sendOtp()
                                                                     setOtpSent(true);
 
                                                                 }}
@@ -1046,7 +999,6 @@ export default function TransporterDashboard() {
                                                             </div>
                                                         )}
                                                     </>
->>>>>>> new-feature
                                                 )}
 
                                                 <button

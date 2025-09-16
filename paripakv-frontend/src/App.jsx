@@ -18,8 +18,6 @@ import { Toaster } from 'react-hot-toast';
 import OAuth2RedirectHandler from "./api/OAuth2RedirectHandler"; // Import the OAuth2RedirectHandler component
 import ResetPassword from "./pages/ResetPassword"; // Import the ResetPassword component
 import CompleteProfile from "./pages/CompleteProfile"; // Import the CompleteProfile component
-<<<<<<< HEAD
-=======
 import './i18n'; // Import the i18n configuration
 import i18n from "./i18n";
 import { useTranslation } from 'react-i18next';
@@ -28,7 +26,6 @@ import ChatPage from "./pages/chatPage";
 import ChatList from './components/ChatList';
 import ChatWindow from './components/ChatWindow';
 import PaymentPage from "./pages/PaymentPage";
->>>>>>> new-feature
 function App() {
 
   return (
@@ -36,8 +33,6 @@ function App() {
 
     <Router>
       <AuthProvider>
-<<<<<<< HEAD
-=======
         <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px' }}>
           <label style={{ marginRight: '10px' }}>Language:</label>
           <select onChange={(e) => i18n.changeLanguage(e.target.value)} defaultValue={i18n.language}>
@@ -50,7 +45,6 @@ function App() {
           </select>
         </div>
 
->>>>>>> new-feature
         <Toaster position="top-center" reverseOrder={false} /> {/* ✅ Add this */}
 
         <Routes>
@@ -79,14 +73,11 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/complete-profile" element={<CompleteProfile />} />
-<<<<<<< HEAD
-=======
           <Route path="/chat/:buyerId/:farmerId/:productId" element={<ChatPage />} />
           <Route path="/chat/farmer/:farmerId" element={<FarmerChatPage />} />
           <Route path="/messages" element={<ChatList />} />
           <Route path="/chat/:otherUserId/:productId" element={<ChatWindow />} />
           <Route path="/payment" element={<PaymentPage />} />
->>>>>>> new-feature
           {/* Add more routes as needed */}
         </Routes>
       </AuthProvider>

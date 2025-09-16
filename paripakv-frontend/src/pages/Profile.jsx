@@ -14,13 +14,10 @@ export default function Profile() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-<<<<<<< HEAD
 
-=======
-    const baseUrl = "http://localhost:8089"
+    const baseUrl = import.meta.env.VITE_API_URL
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
->>>>>>> new-feature
     useEffect(() => {
         const fetchProfile = async () => {
             const token = Cookies.get('token');
@@ -38,11 +35,7 @@ export default function Profile() {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUser(userData);
-<<<<<<< HEAD
 
-=======
-                console.log(userData)
->>>>>>> new-feature
                 if (userData.role === 'FARMER') {
                     const { data: listings } = await axios.get(`${import.meta.env.VITE_API_URL}/listings/farmer`, {
                         headers: { Authorization: `Bearer ${token}` },
@@ -64,9 +57,7 @@ export default function Profile() {
 
         fetchProfile();
     }, [navigate]);
-<<<<<<< HEAD
 
-=======
     const handleImageClick = (imageUrl) => {
         setSelectedImage(imageUrl);
         setIsModalOpen(true);
@@ -75,7 +66,6 @@ export default function Profile() {
         setIsModalOpen(false);
         setSelectedImage(null);
     };
->>>>>>> new-feature
     const handleLogout = () => {
         Cookies.remove('token');
         navigate('/login');
@@ -158,11 +148,9 @@ export default function Profile() {
                     <div className="bg-gradient-to-br from-green-50 via-white to-green-100 border border-green-200 rounded-3xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300">
                         <div className="flex flex-col lg:flex-row items-center gap-8">
                             <div className="relative">
-<<<<<<< HEAD
                                 <div className="w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white font-bold text-4xl flex items-center justify-center shadow-xl ring-4 ring-white/50">
                                     {user.name?.[0]?.toUpperCase() || '👤'}
                                 </div>
-=======
                                 {user.imageUrl ? (
                                     <img
                                         src={`${baseUrl}${user.imageUrl}`}
@@ -211,16 +199,10 @@ export default function Profile() {
                                         </div>
                                     </div>
                                 )}
->>>>>>> new-feature
                                 <div className="absolute -bottom-2 -right-2 bg-green-600 rounded-full p-2">
                                     <User className="w-4 h-4 text-white" />
                                 </div>
                             </div>
-
-<<<<<<< HEAD
-=======
-
->>>>>>> new-feature
                             <div className="flex-1 text-center lg:text-left w-full">
                                 <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mb-6">
                                     <div>

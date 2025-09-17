@@ -9,9 +9,4 @@ class ParipakvApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
-<<<<<<< HEAD
-=======
-
->>>>>>> new-feature
 }

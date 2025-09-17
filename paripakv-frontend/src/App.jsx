@@ -22,7 +22,7 @@ import './i18n'; // Import the i18n configuration
 import i18n from "./i18n";
 import { useTranslation } from 'react-i18next';
 import FarmerChatPage from "./pages/FarmerChatPage";
-import ChatPage from "./pages/chatPage";
+import ChatPage from "./pages/ChatPage";
 import ChatList from './components/ChatList';
 import ChatWindow from './components/ChatWindow';
 import PaymentPage from "./pages/PaymentPage";

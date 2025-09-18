@@ -136,7 +136,7 @@ export default function Profile() {
                             <div className="relative">
                                 {user.imageUrl ? (
                                     <img
-                                        src={`${baseUrl}${user.imageUrl}`}
+                                        src={`${user.imageUrl}`}
                                         alt={user.name}
                                         onClick={() => handleImageClick(`${baseUrl}${user.imageUrl}`)}
                                         className="w-32 h-32 rounded-full object-cover shadow-xl ring-4 ring-white/50 cursor-pointer hover:scale-105 transition-transform duration-300"

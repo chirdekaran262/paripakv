@@ -31,7 +31,7 @@ export default function ProductListingList() {
                 if (filters.village) params.append('village', filters.village);
                 if (filters.name) params.append('name', filters.name);
 
-              
+
                 const url = `${import.meta.env.VITE_API_URL}/listings${params.toString() ? `?${params.toString()}` : ''}`;
                 const response = await axios.get(url, {
                     headers: token ? { 'Authorization': `Bearer ${token}` } : {}
@@ -83,7 +83,7 @@ export default function ProductListingList() {
                                 <Leaf className="w-10 h-10" />
                             </div>
                             <div className="text-yellow-200">
-                                 
+
                                 <h1 className="text-4xl md:text-6xl font-bold mb-2">{t('freshFarmProducts')}</h1>
                                 <p className="text-green-50 text-lg">{t('connectMessage')}</p>
                             </div>
@@ -98,7 +98,7 @@ export default function ProductListingList() {
                                     </div>
                                     <span className="text-xs text-green-600 font-medium">FRESH</span>
                                 </div>
-                                 
+
                                 <div>
                                     <p className="text-3xl font-bold mb-1">{listings.length}</p>
                                     <p className="text-sm font-medium text-green-800">{t('availableProducts')}</p>
@@ -284,7 +284,7 @@ export default function ProductListingList() {
                                                 </div>
                                             ) : (
                                                 <img
-                                                    src={item.images?.[0]?.imageUrl ? `${baseUrl}${item.images[0].imageUrl}` : "./assets/vegetable.png"}
+                                                    src={item.images?.[0]?.imageUrl ? `${item.images[0].imageUrl}` : "./assets/vegetable.png"}
                                                     alt={item.name}
                                                     onError={() => handleImageError(item.id)}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

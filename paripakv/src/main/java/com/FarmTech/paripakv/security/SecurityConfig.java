@@ -39,8 +39,8 @@ public class SecurityConfig {
                         .requestMatchers("/users/register", "/users/login", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/users/forgot-password").permitAll()
                         .requestMatchers("/uploads/*").permitAll()
-                        .requestMatchers("/uploads/proofs/*").permitAll()
-                        .requestMatchers("/uploads/profile/*").permitAll()
+                        .requestMatchers("/upload/*").permitAll()
+                        .requestMatchers("https://res.cloudinary.com/dh4pkyxup/*").permitAll()
                         .requestMatchers("/users/reset-password").permitAll()
                         .requestMatchers("/ws/**").permitAll()  // 👈 allow WS handshake
                         .requestMatchers("/topic/**", "/app/**").permitAll() // 👈 allow messaging endpoints

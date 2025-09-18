@@ -7,7 +7,10 @@ import com.FarmTech.paripakv.model.UserRole;
 import com.FarmTech.paripakv.model.Users;
 import com.FarmTech.paripakv.repository.PasswordResetTokenRepository;
 import com.FarmTech.paripakv.repository.UserRepository;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,7 +38,8 @@ public class UserService implements UserDetailsService {
     private final PasswordResetTokenRepository tokenRepo;
     private final EmailService emailService;
     private final String uploadDir="uploads/profile/";
-
+    @Autowired
+    private Cloudinary cloudinary;
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return repo.findByEmail(email);
@@ -48,9 +53,9 @@ public class UserService implements UserDetailsService {
         }
         String filename=UUID.randomUUID()+"_"+profileImage.getOriginalFilename();
         System.out.println(filename);
-        Path path = Paths.get(uploadDir+filename);
-        Files.copy(profileImage.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING);
-        user.setImageUrl("/uploads/profile/"+filename);
+        Map uploadResult = cloudinary.uploader().upload(profileImage.getBytes(),
+                ObjectUtils.asMap("folder", "profile/"));
+        user.setImageUrl(uploadResult.get("secure_url").toString());
         user.setPassword(encoder.encode(user.getPassword()));
         System.out.println(user.getImageUrl());
         return repo.save(user);

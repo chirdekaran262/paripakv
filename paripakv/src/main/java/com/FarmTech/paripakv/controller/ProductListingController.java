@@ -3,6 +3,9 @@ package com.FarmTech.paripakv.controller;
 import com.FarmTech.paripakv.model.ProductListing;
 import com.FarmTech.paripakv.dto.ProductListingDTO;
 import com.FarmTech.paripakv.service.ProductListingService;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -26,7 +30,8 @@ import java.util.UUID;
 public class ProductListingController {
 
     private final ProductListingService service;
-
+    @Autowired
+    private Cloudinary cloudinary;
     public ProductListingController(ProductListingService service) {
         this.service = service;
     }
@@ -78,22 +83,33 @@ public class ProductListingController {
         return new ResponseEntity<>(productListing,HttpStatus.OK);
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
-        try {
-            String folderPath = "uploads/";
-            File uploadDir = new File(folderPath);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
-
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(folderPath + fileName);
-            Files.write(filePath, file.getBytes());
-
-            String imageUrl = "/uploads/" + fileName; // Publicly accessible via static path
-            return ResponseEntity.ok(imageUrl);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed");
-        }
+//    @PostMapping("/upload")
+//    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+//        try {
+//            String folderPath = "uploads/";
+//            File uploadDir = new File(folderPath);
+//            if (!uploadDir.exists()) uploadDir.mkdirs();
+//
+//            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+//            Path filePath = Paths.get(folderPath + fileName);
+//            Files.write(filePath, file.getBytes());
+//
+//            String imageUrl = "/uploads/" + fileName; // Publicly accessible via static path
+//            return ResponseEntity.ok(imageUrl);
+//        } catch (IOException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed");
+//        }
+//    }
+@PostMapping("/upload")
+public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+    try {
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                ObjectUtils.asMap("folder", "uploads/"));
+        String imageUrl = uploadResult.get("secure_url").toString();
+        return ResponseEntity.ok(imageUrl);
+    } catch (IOException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed");
     }
+}
 
 }

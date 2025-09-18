@@ -5,8 +5,11 @@ import com.FarmTech.paripakv.repository.OrderRepository;
 import com.FarmTech.paripakv.repository.ProductListingRepository;
 import com.FarmTech.paripakv.repository.UserRepository;
 import com.FarmTech.paripakv.utils.InvoiceGenerator;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -41,7 +44,8 @@ public class OrderService {
     private final EmailService emailService;
     private final InvoiceGenerator invoiceGenerator;
     private final JavaMailSender mailSender;
-
+    @Autowired
+    private Cloudinary cloudinary;
     public OrderService(OrderRepository repo, UserRepository userRepo, ProductListingRepository productListingRepo, EmailService emailService,InvoiceGenerator invoiceGenerator, JavaMailSender mailSender) {
         this.repo = repo;
         this.userRepo = userRepo;
@@ -209,8 +213,7 @@ public class OrderService {
             }
             System.out.println("Uploading file: " + file.getOriginalFilename());
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(uploadDir + fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
 
             SecureRandom random = new SecureRandom();
             String otp = String.format("%06d", random.nextInt(1000000));
@@ -241,7 +244,9 @@ public class OrderService {
             helper.setText(htmlContent, true); // true = HTML
 
             mailSender.send(mimeMessage);
-            order.setProofImageUrl("/uploads/proofs/" + fileName);
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap("folder", "proofs/"));
+            order.setProofImageUrl(uploadResult.get("secure_url").toString());
             System.out.println(order);
             repo.save(order);
 

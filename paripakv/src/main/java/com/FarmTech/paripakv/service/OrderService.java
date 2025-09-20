@@ -9,7 +9,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -34,6 +34,7 @@ import java.util.UUID;
 
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
 
     private final OrderRepository repo;
@@ -44,16 +45,9 @@ public class OrderService {
     private final EmailService emailService;
     private final InvoiceGenerator invoiceGenerator;
     private final JavaMailSender mailSender;
-    @Autowired
-    private Cloudinary cloudinary;
-    public OrderService(OrderRepository repo, UserRepository userRepo, ProductListingRepository productListingRepo, EmailService emailService,InvoiceGenerator invoiceGenerator, JavaMailSender mailSender) {
-        this.repo = repo;
-        this.userRepo = userRepo;
-        this.productListingRepo = productListingRepo;
-        this.emailService = emailService;
-        this.invoiceGenerator = invoiceGenerator;
-        this.mailSender = mailSender;
-    }
+
+    private final Cloudinary cloudinary;
+
 
     public Order placeOrder(Order order, String buyerEmail) {
         var buyer = userRepo.findByEmail(buyerEmail);

@@ -138,7 +138,7 @@ export default function Profile() {
                                     <img
                                         src={`${user.imageUrl}`}
                                         alt={user.name}
-                                        onClick={() => handleImageClick(`${baseUrl}${user.imageUrl}`)}
+                                        onClick={() => handleImageClick(`${user.imageUrl}`)}
                                         className="w-32 h-32 rounded-full object-cover shadow-xl ring-4 ring-white/50 cursor-pointer hover:scale-105 transition-transform duration-300"
                                     />
                                 ) : (

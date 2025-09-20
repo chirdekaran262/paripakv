@@ -38,15 +38,14 @@ public class UserService implements UserDetailsService {
     private final PasswordResetTokenRepository tokenRepo;
     private final EmailService emailService;
     private final String uploadDir="uploads/profile/";
-    @Autowired
-    private Cloudinary cloudinary;
+
+    private final Cloudinary cloudinary;
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return repo.findByEmail(email);
     }
 
     public Users register(Users user, MultipartFile profileImage) throws IOException {
-        System.out.println(user);
         File dir = new File(uploadDir);
         if(!dir.exists()){
             dir.mkdirs();

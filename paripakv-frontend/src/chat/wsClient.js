@@ -19,10 +19,10 @@ class WebSocketManager {
         }
 
         return new Promise((resolve, reject) => {
-            const wsUrl = import.meta.env.VITE_BACKEND_WS_URL || "http://localhost:8089/ws";
+            const wsUrl = import.meta.env.VITE_API_URL;
             
             this.client = new Client({
-                webSocketFactory: () => new SockJS(wsUrl),
+                webSocketFactory: () => new SockJS(wsUrl/ws),
                 reconnectDelay: this.reconnectDelay,
                 heartbeatIncoming: 4000,
                 heartbeatOutgoing: 4000,

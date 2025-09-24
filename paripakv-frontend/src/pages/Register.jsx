@@ -31,7 +31,7 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         try {
             const formDataToSend = new FormData();
 
@@ -61,26 +61,23 @@ export default function Register() {
             navigate("/login");
         } catch (err) {
             console.error(err);
-            if(err.response?.status === 409) {
-                if(err.response?.data?.message) {
-                    alert(`❌ ${err.response.data.message}`);
-                }
+            if (err.response?.status === 409) {
                 alert("❌ User already exists. Please login.");
                 navigate("/login");
                 return;
-            }else if(err.response?.status === 400) {
+            } else if (err.response?.status === 400) {
                 alert("❌ Invalid data. Please check your inputs.");
                 return;
             }
-            else if(err.response?.status === 500) {
+            else if (err.response?.status === 500) {
                 alert("❌ Server error. Please try again later.");
                 return;
             }
-            else if(err.message === "Network Error") {
+            else if (err.message === "Network Error") {
                 alert("❌ Network error. Please check your connection.");
                 return;
             }
-            else{
+            else {
                 alert("❌ Registration failed");
             }
         }
@@ -88,7 +85,7 @@ export default function Register() {
 
 
 
-     const handleGoogleLogin = () => {
+    const handleGoogleLogin = () => {
         window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`;
         console.log(window.location.href);
     };
@@ -139,8 +136,8 @@ export default function Register() {
                             <div className="w-full border-t border-green-700"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                             <span className="px-4 bg-white text-green-700 rounded-full">{t('orRegisterWithEmail')}</span>
-                         </div>
+                            <span className="px-4 bg-white text-green-700 rounded-full">{t('orRegisterWithEmail')}</span>
+                        </div>
                     </div>
 
                     {/* Form inputs - update all input containers with this pattern */}
@@ -148,7 +145,7 @@ export default function Register() {
                         {/* Full Name */}
                         <div className="space-y-1.5">
                             <label className="block text-sm font-semibold text-green-800">{t('fullName')}</label>
-                             <div className="relative flex items-center group">
+                            <div className="relative flex items-center group">
                                 <User className="absolute left-3 text-green-600/70 w-5 h-5 group-hover:text-green-700 transition-colors duration-200" />
                                 <input
                                     type="text"
@@ -162,8 +159,8 @@ export default function Register() {
                             </div>
                         </div>
                         <div className="space-y-1.5">
-                              <label className="block text-sm font-semibold text-green-800">{t('email')}</label>
-                             <div className="relative flex items-center group">
+                            <label className="block text-sm font-semibold text-green-800">{t('email')}</label>
+                            <div className="relative flex items-center group">
                                 <Mail className="absolute left-3 text-green-600/70 w-5 h-5 group-hover:text-green-700 transition-colors duration-200" />
                                 <input
                                     type="email"
@@ -179,8 +176,8 @@ export default function Register() {
 
                         {/* Mobile Number */}
                         <div className="space-y-1.5">
-                              <label className="block text-sm font-semibold text-green-800">{t('mobile')}</label>
-                             <div className="relative flex items-center group">
+                            <label className="block text-sm font-semibold text-green-800">{t('mobile')}</label>
+                            <div className="relative flex items-center group">
                                 <Phone className="absolute left-3 text-green-600/70 w-5 h-5 group-hover:text-green-700 transition-colors duration-200" />
                                 <input
                                     type="tel"
@@ -196,8 +193,8 @@ export default function Register() {
 
                         {/* Aadhaar Number */}
                         <div className="space-y-1.5">
-                              <label className="block text-sm font-semibold text-green-800">{t('aadhaar')}</label>
-                             <div className="relative flex items-center group">
+                            <label className="block text-sm font-semibold text-green-800">{t('aadhaar')}</label>
+                            <div className="relative flex items-center group">
                                 <CreditCard className="absolute left-3 text-green-600/70 w-5 h-5 group-hover:text-green-700 transition-colors duration-200" />
                                 <input
                                     type="text"
@@ -213,8 +210,8 @@ export default function Register() {
 
                         {/* Role Selection specific update */}
                         <div className="">
-                             <label className="block text-sm font-semibold text-green-800">{t('')}</label>
-                             <div className="relative flex items-center group">
+                            <label className="block text-sm font-semibold text-green-800">{t('')}</label>
+                            <div className="relative flex items-center group">
                                 <div className="absolute left-3 text-white-800 w-5 h-5 pointer-events-none">
                                     {formData.role === 'FARMER' && '🌾'}
                                     {formData.role === 'BUYER' && '🛒'}
@@ -227,10 +224,10 @@ export default function Register() {
                                     className="w-full pl-12 pr-10 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none text-white-800 appearance-none transition-all duration-200"
                                     required
                                 >
-                                     <option value="FARMER" className="py-2 text-white-800">{t('farmer')}</option>
+                                    <option value="FARMER" className="py-2 text-white-800">{t('farmer')}</option>
                                     <option value="BUYER" className="py-2 text-white-800">{t('buyer')}</option>
                                     <option value="TRANSPORTER" className="py-2 text-white-800">{t('transporter')}</option>
-                                 </select>
+                                </select>
                                 <div className="absolute right-3 pointer-events-none">
                                     <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -241,8 +238,8 @@ export default function Register() {
 
                         {/* Password */}
                         <div className="space-y-1.5">
-                             <label className="block text-sm font-semibold text-green-800">{t('password')}</label>
-                             <div className="relative flex items-center">
+                            <label className="block text-sm font-semibold text-green-800">{t('password')}</label>
+                            <div className="relative flex items-center">
                                 <Lock className="absolute left-3 text-green-600/70 w-5 h-5" />
                                 <input
                                     type="password"
@@ -257,8 +254,8 @@ export default function Register() {
                         </div>
                         {/* Address */}
                         <div className="space-y-1.5">
-                             <label className="block text-sm font-semibold text-green-800">{t('address')}</label>
-                             <input
+                            <label className="block text-sm font-semibold text-green-800">{t('address')}</label>
+                            <input
                                 type="text"
                                 name="address"
                                 value={formData.address}
@@ -271,8 +268,8 @@ export default function Register() {
 
                         {/* Village */}
                         <div className="space-y-1.5">
-                              <label className="block text-sm font-semibold text-green-800">{t('village')}</label>
-                             <input
+                            <label className="block text-sm font-semibold text-green-800">{t('village')}</label>
+                            <input
                                 type="text"
                                 name="village"
                                 value={formData.village}
@@ -285,8 +282,8 @@ export default function Register() {
 
                         {/* District */}
                         <div className="space-y-1.5">
-                              <label className="block text-sm font-semibold text-green-800">{t('district')}</label>
-                             <input
+                            <label className="block text-sm font-semibold text-green-800">{t('district')}</label>
+                            <input
                                 type="text"
                                 name="district"
                                 value={formData.district}
@@ -299,8 +296,8 @@ export default function Register() {
 
                         {/* State */}
                         <div className="space-y-1.5">
-                              <label className="block text-sm font-semibold text-green-800">{t('state')}</label>
-                             <input
+                            <label className="block text-sm font-semibold text-green-800">{t('state')}</label>
+                            <input
                                 type="text"
                                 name="state"
                                 value={formData.state}
@@ -313,8 +310,8 @@ export default function Register() {
 
                         {/* Pincode */}
                         <div className="space-y-1.5">
-                              <label className="block text-sm font-semibold text-green-800">{t('pincode')}</label>
-                             <input
+                            <label className="block text-sm font-semibold text-green-800">{t('pincode')}</label>
+                            <input
                                 type="text"
                                 name="pincode"
                                 value={formData.pincode}
@@ -324,7 +321,7 @@ export default function Register() {
                                 required
                             />
                         </div>
-                         {/* Profile Image Upload */}
+                        {/* Profile Image Upload */}
                         <div className="space-y-1.5">
                             <label className="block text-sm font-semibold text-green-800">Profile Image</label>
                             <div className="relative flex items-center group">
@@ -343,7 +340,7 @@ export default function Register() {
                                 />
                             </div>
                         </div>
- 
+
                         {/* Submit button */}
                         <button
                             type="submit"
@@ -351,19 +348,19 @@ export default function Register() {
 
                         >
                             <UserPlus className="w-5 h-5" />
-                              {t('createAccount')}
-                         </button>
+                            {t('createAccount')}
+                        </button>
                     </form>
 
                     {/* Footer text */}
                     <p className="text-sm text-center mt-6 text-green-700">
-                         Already have an account?{' '}
+                        Already have an account?{' '}
                         <Link to="/login" className="text-green-800 font-semibold hover:text-green-900 transition-colors duration-200">
                         </Link>
-                          {t('alreadyHaveAccount')}{' '}
+                        {t('alreadyHaveAccount')}{' '}
                         <Link to="/login" className="text-green-800 font-semibold hover:text-green-900 transition-colors duration-200">
                             {t('signin')}
-                         </Link>
+                        </Link>
                     </p>
                 </div>
             </div>

@@ -239,8 +239,8 @@ export default function ProductDetails() {
                     Back to Products
                 </button>
 
-                 
-                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
                     {/* Product Image Section */}
                     <div className="space-y-6">
                         {/* Image Container */}
@@ -256,9 +256,9 @@ export default function ProductDetails() {
                                         {product.images.map((img) => (
                                             <SwiperSlide key={img.id}>
                                                 <img
-                                                    src={`${baseUrl}${img.imageUrl}`}
+                                                    src={`${img.imageUrl}`}
                                                     alt={product.name}
-                                                    onClick={() => handleImageClick(`${baseUrl}${img.imageUrl}`)}
+                                                    onClick={() => handleImageClick(`${img.imageUrl}`)}
                                                     onError={(e) => (e.target.src = "./assets/vegetable.png")}
                                                     className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-105 duration-300"
                                                     loading="lazy"
@@ -314,9 +314,9 @@ export default function ProductDetails() {
                                                         className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all duration-200 hover:scale-110"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            const currentIndex = product.images.findIndex(img => `${baseUrl}${img.imageUrl}` === selectedImage);
+                                                            const currentIndex = product.images.findIndex(img => `${img.imageUrl}` === selectedImage);
                                                             const prevIndex = currentIndex > 0 ? currentIndex - 1 : product.images.length - 1;
-                                                            setSelectedImage(`${baseUrl}${product.images[prevIndex].imageUrl}`);
+                                                            setSelectedImage(`${product.images[prevIndex].imageUrl}`);
                                                         }}
                                                     >
                                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -327,9 +327,9 @@ export default function ProductDetails() {
                                                         className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all duration-200 hover:scale-110"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            const currentIndex = product.images.findIndex(img => `${baseUrl}${img.imageUrl}` === selectedImage);
+                                                            const currentIndex = product.images.findIndex(img => `${img.imageUrl}` === selectedImage);
                                                             const nextIndex = currentIndex < product.images.length - 1 ? currentIndex + 1 : 0;
-                                                            setSelectedImage(`${baseUrl}${product.images[nextIndex].imageUrl}`);
+                                                            setSelectedImage(`${product.images[nextIndex].imageUrl}`);
                                                         }}
                                                     >
                                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -342,7 +342,7 @@ export default function ProductDetails() {
                                             {/* Image Counter */}
                                             {product.images?.length > 1 && (
                                                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
-                                                    {product.images.findIndex(img => `${baseUrl}${img.imageUrl}` === selectedImage) + 1} / {product.images.length}
+                                                    {product.images.findIndex(img => `${img.imageUrl}` === selectedImage) + 1} / {product.images.length}
                                                 </div>
                                             )}
                                         </div>
@@ -357,7 +357,7 @@ export default function ProductDetails() {
                                     Fresh
                                 </div>
                                 {isLowStock && !isOutOfStock && (
-                                                                        <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-medium shadow-lg">
+                                    <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-medium shadow-lg">
                                         Limited Stock
                                     </div>
                                 )}
@@ -380,7 +380,7 @@ export default function ProductDetails() {
                             </button>
 
                             {/* Rating */}
-                            
+
                             <div className="absolute bottom-4 left-4 bg-white rounded-lg p-2 sm:p-3 shadow-lg border border-gray-100">
                                 <div className="flex items-center gap-1">
                                     {[...Array(5)].map((_, i) => (
@@ -392,7 +392,7 @@ export default function ProductDetails() {
                         </div>
 
                         {/* Product Stats */}
-                        
+
                         <div className="grid grid-cols-3 gap-4 sm:gap-6">
                             <div className="bg-white rounded-xl p-3 sm:p-4 text-center shadow-lg border border-gray-100">
                                 <Package className="w-6 h-6 text-green-600 mx-auto mb-1" />
@@ -415,7 +415,7 @@ export default function ProductDetails() {
                     {/* Product Details Section */}
                     <div className="space-y-6">
                         {/* Product Header */}
-                        
+
                         {/* Header */}
                         <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-xl border border-gray-100">
                             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
@@ -428,7 +428,7 @@ export default function ProductDetails() {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-sm text-gray-500">Price per kg</p>
-                                    
+
                                     <p className="text-2xl sm:text-3xl font-bold text-green-600 flex items-center gap-1">
                                         <IndianRupee className="w-5 h-5" />
                                         {product.pricePerKg}
@@ -436,7 +436,7 @@ export default function ProductDetails() {
                                 </div>
                             </div>
 
-                           
+
                             {/* Info Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div className="bg-green-50 rounded-lg p-3 border border-green-100">
@@ -447,7 +447,7 @@ export default function ProductDetails() {
                                     <p className="font-medium text-green-800">{product.availableDate}</p>
                                 </div>
                                 <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
-                                    
+
                                     <div className="flex items-center gap-2 text-sm text-blue-700">
                                         <Package className="w-4 h-4" />
                                         Total Value
@@ -483,7 +483,7 @@ export default function ProductDetails() {
                                 <h3 className="text-xl font-semibold text-gray-800">Farmer Information</h3>
                             </div>
 
-                           
+
 
                             {user ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -499,7 +499,7 @@ export default function ProductDetails() {
                                             <span className="font-medium text-gray-800">{user.email}</span>
                                         </div>
                                     </div>
-                                    <div className="space-y-3">                                        
+                                    <div className="space-y-3">
                                         <div className="flex items-center gap-2 text-sm">
                                             <Phone className="w-4 h-4 text-gray-500" />
                                             <span className="text-gray-600">Mobile:</span>

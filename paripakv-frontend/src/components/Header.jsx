@@ -249,7 +249,8 @@ export default function Header() {
 
             {/* Mobile Navigation */}
             {menuOpen && (
-                <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
+                <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg fixed inset-0 z-50 overflow-y-auto">
+
                     <div className="px-6 py-6 space-y-4">
 
                         {isAuthenticated ? (

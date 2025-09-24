@@ -5,7 +5,7 @@ import { Search, Filter, MapPin, Calendar, Package, IndianRupee, Heart, Star, Ey
 import Cookies from 'js-cookie';
 import Header from "../components/Header";
 import { useAuth } from '../context/AuthContext';
-
+import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 
 export default function ProductListingList() {
@@ -72,6 +72,15 @@ export default function ProductListingList() {
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300">
+            <Helmet>
+                <title>Paripakv | Empowering Farmers with Technology</title>
+                <meta
+                    name="description"
+                    content="Paripakv is a platform for farmers, buyers, and transporters to connect, sell, and manage agricultural products with ease."
+                />
+                <meta name="robots" content="index, follow" />
+            </Helmet>
+
             <Header />
 
             {/* Hero Section with TransporterDashboard color scheme */}

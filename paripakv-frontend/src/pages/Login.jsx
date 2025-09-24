@@ -5,6 +5,8 @@ import { Tractor, LogIn, Mail, Lock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import googleIcon from '../assets/google.svg';
 import { useTranslation } from 'react-i18next';
+import { Helmet } from "react-helmet";
+
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -32,6 +34,14 @@ export default function Login() {
     };
     return (
         <div className="min-h-screen bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300 flex flex-col relative overflow-hidden">
+            <Helmet>
+                <title>Paripakv - Login</title>
+                <meta
+                    name="description"
+                    content="Login to Paripakv to manage crops, sell products, and connect with buyers and transporters."
+                />
+                <meta name="robots" content="index, follow" />
+            </Helmet>
             {/* Background decorative elements */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute top-0 -left-4 w-72 h-72 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob"></div>
@@ -75,7 +85,7 @@ export default function Login() {
                             <div className="w-full border-t border-green-400"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                        <span className="px-4 bg-white  text-green-900 rounded-full">{t('orRegisterWithEmail')}</span>
+                            <span className="px-4 bg-white  text-green-900 rounded-full">{t('orRegisterWithEmail')}</span>
                         </div>
                     </div>
 
@@ -118,7 +128,7 @@ export default function Login() {
                             type="submit"
                             className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-green-600/20 hover:shadow-xl"
                         >
-                            <LogIn className="w-5 h-5" />  
+                            <LogIn className="w-5 h-5" />
                             {t('signin')}
                         </button>
                     </form>

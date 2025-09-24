@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://paripakv-krishivision.onrender.com/sitemap.xml

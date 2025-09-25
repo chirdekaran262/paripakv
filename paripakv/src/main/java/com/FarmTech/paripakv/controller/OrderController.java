@@ -37,7 +37,7 @@ public class OrderController {
 
     @PostMapping
     @PreAuthorize("hasRole('BUYER')")
-    public ResponseEntity<Order> placeOrder(@RequestBody Order order, Authentication auth) {
+    public ResponseEntity<Order> placeOrder(@RequestBody Order order, Authentication auth) throws MessagingException {
         String buyerEmail = auth.getName();
         Order placedOrder = service.placeOrder(order, buyerEmail);
         return new ResponseEntity<>(placedOrder, HttpStatus.CREATED); // 201 Created
@@ -66,6 +66,8 @@ public class OrderController {
             return ResponseEntity.ok(updatedOrder); // 200 OK
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Invalid status value."); // 400 Bad Request
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -110,7 +112,7 @@ public class OrderController {
     public ResponseEntity<String> pickupOrder(
             @PathVariable UUID orderId,
             @RequestParam UUID transporterId
-    ) {
+    ) throws MessagingException {
         service.pickupOrder(orderId, transporterId);
         return ResponseEntity.ok("Order picked up");
     }

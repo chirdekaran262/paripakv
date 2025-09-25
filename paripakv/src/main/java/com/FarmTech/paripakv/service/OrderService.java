@@ -21,10 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,8 +44,10 @@ public class OrderService {
 
     private final Cloudinary cloudinary;
 
+    private final EmailTemplateService emailTemplateService;
 
-    public Order placeOrder(Order order, String buyerEmail) {
+    public Order placeOrder(Order order, String buyerEmail) throws MessagingException {
+        // Fetch buyer details
         var buyer = userRepo.findByEmail(buyerEmail);
         order.setBuyerId(buyer.getId());
         String fullAddress = buyer.getAddress() + ", " +
@@ -57,6 +55,25 @@ public class OrderService {
                 buyer.getDistrict() + ", " +
                 buyer.getState() + " - " +
                 buyer.getPincode();
+
+        // Fetch product listing and farmer
+        ProductListing productListing = productListingRepo.findById(order.getListingId()).orElse(null);
+        if (productListing != null) {
+            Optional<Users> farmerOpt = userRepo.findById(productListing.getFarmerId());
+            if (farmerOpt.isPresent()) {
+                Users farmer = farmerOpt.get();
+                System.out.println(farmer);
+                // Send email to farmer
+                String farmerEmailContent = emailTemplateService.buildFarmerEmailContent(farmer.getName(), buyer.getName(), productListing.getName(), order.getTotalPrice(), fullAddress);
+                emailService.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent);
+                System.out.println(order);
+                // Send email to buyer
+                String buyerEmailContent = emailTemplateService.buildBuyerEmailContent(buyer.getName(), productListing.getName(), order.getListingId());
+                emailService.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent);
+            }
+
+        }
+
 
         order.setDeliveryAddress(fullAddress);
 
@@ -73,25 +90,41 @@ public class OrderService {
         return repo.findAll();
     }
 
-    public Order updateStatus(UUID id, OrderStatus status,double quantity) {
+    public Order updateStatus(UUID id, OrderStatus status, double quantity) throws MessagingException {
 
         Order order = repo.findById(id).orElseThrow();
+        Users buyer = userRepo.findById(order.getBuyerId())
+                .orElseThrow(() -> new RuntimeException("Buyer not found"));
+
         if (status == OrderStatus.CONFIRMED) {
-            Optional<ProductListing> productListing = productListingRepo.findById(order.getListingId());
-            if (productListing.isPresent()) {
-                ProductListing productListingObj = productListing.get();
-                productListingObj.setQuantityKg(productListingObj.getQuantityKg() - quantity);
-                productListingRepo.save(productListingObj);
-            }
-            else {
+            // Update product quantity
+            Optional<ProductListing> productListingOpt = productListingRepo.findById(order.getListingId());
+            if (productListingOpt.isPresent()) {
+                ProductListing productListing = productListingOpt.get();
+                productListing.setQuantityKg(productListing.getQuantityKg() - quantity);
+                productListingRepo.save(productListing);
+
+                // Send email to buyer
+                String buyerEmailContent = emailTemplateService.buildBuyerOrderConfirmedContent(
+                        buyer.getName(),
+                        productListing.getName(),
+                        order.getId(),
+                        quantity
+                );
+                emailService.sendEmail(
+                        buyer.getEmail(),
+                        "✅ Your Order Has Been Confirmed - Paripakv",
+                        buyerEmailContent
+                );
+            } else {
                 throw new RuntimeException("Product listing not found for id: " + order.getListingId());
             }
         }
 
         order.setStatus(status);
-        System.out.println(order);
         return repo.save(order);
     }
+
 
 
     public List<Order> getOrdersListingId(UUID id) {
@@ -105,21 +138,62 @@ public class OrderService {
     public List<Order> getAvailableOrdersForPickup() {
         return repo.findByStatusAndTransporterIdIsNull(OrderStatus.CONFIRMED);
     }
-    public void pickupOrder(UUID orderId, UUID transporterId) {
+    public void pickupOrder(UUID orderId, UUID transporterId) throws MessagingException {
         Order order = repo.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
         if (order.getTransporterId() != null) {
-            throw new RuntimeException("Order already picked by someone");
+            throw new RuntimeException("Order already picked up by someone");
         }
 
-            order.setTransporterId(transporterId);
-            order.setDeliveryStatus(DeliveryStatus.PICKED_UP);
-            order.setPickupTime(LocalDateTime.now());
-
+        order.setTransporterId(transporterId);
+        order.setDeliveryStatus(DeliveryStatus.PICKED_UP);
+        order.setPickupTime(LocalDateTime.now());
 
         repo.save(order);
+
+        // Fetch related users
+        Users buyer = userRepo.findById(order.getBuyerId())
+                .orElseThrow(() -> new RuntimeException("Buyer not found"));
+
+        ProductListing productListing = productListingRepo.findById(order.getListingId())
+                .orElseThrow(() -> new RuntimeException("Product listing not found"));
+
+        Users farmer = userRepo.findById(productListing.getFarmerId())
+                .orElseThrow(() -> new RuntimeException("Farmer not found"));
+
+        Users transporter = userRepo.findById(transporterId)
+                .orElseThrow(() -> new RuntimeException("Transporter not found"));
+
+        // Send email to buyer
+        String buyerEmailContent = emailTemplateService.buildBuyerPickupEmailContent(
+                buyer.getName(),
+                productListing.getName(),
+                order.getId(),
+                transporter.getName(),
+                order.getPickupTime()
+        );
+        emailService.sendEmail(
+                buyer.getEmail(),
+                "📦 Your Order Has Been Picked Up",
+                buyerEmailContent
+        );
+
+        // Send email to farmer
+        String farmerEmailContent = emailTemplateService.buildFarmerPickupEmailContent(
+                farmer.getName(),
+                productListing.getName(),
+                order.getId(),
+                transporter.getName(),
+                order.getPickupTime()
+        );
+        emailService.sendEmail(
+                farmer.getEmail(),
+                "📦 Your Produce Has Been Picked Up",
+                farmerEmailContent
+        );
     }
+
 
     public void deliverOrder(UUID orderId) {
         Order order = repo.findById(orderId)
@@ -218,24 +292,44 @@ public class OrderService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
 
             String htmlContent =
-                    "<html>" +
-                            "<body style='font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0;'>" +
-                            "  <div style='max-width: 600px; margin: auto; background: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);'>" +
-                            "    <h2 style='color: #4CAF50; margin-top: 0;'>🔐 Delivery OTP</h2>" +
-                            "    <p style='font-size: 16px; color: #555;'>Hello,</p>" +
-                            "    <p style='font-size: 16px; color: #333;'>Your delivery OTP is:</p>" +
-                            "    <p style='font-size: 20px; font-weight: bold; color: #4CAF50;'>" + otp + "</p>" +
-                            "    <p style='font-size: 14px; color: #888;'>This OTP is valid for <strong>5 minutes</strong>. Please use it to verify your delivery.</p>" +
+                    "<!DOCTYPE html>" +
+                            "<html>" +
+                            "<head>" +
+                            "  <meta charset='UTF-8'>" +
+                            "  <meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                            "  <style>" +
+                            "    body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }" +
+                            "    .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }" +
+                            "    h2 { color: #2E7D32; margin-top: 0; }" +
+                            "    p { font-size: 16px; color: #555; line-height: 1.6; }" +
+                            "    .otp { font-size: 24px; font-weight: bold; color: #2E7D32; margin: 15px 0; }" +
+                            "    .footer { font-size: 12px; color: #999; text-align: center; margin-top: 30px; }" +
+                            "    .footer a { color: #2E7D32; text-decoration: none; }" +
+                            "    @media only screen and (max-width: 600px) {" +
+                            "      .container { padding: 20px; }" +
+                            "      .otp { font-size: 20px; }" +
+                            "    }" +
+                            "  </style>" +
+                            "</head>" +
+                            "<body>" +
+                            "  <div class='container'>" +
+                            "    <h2>🔐 Delivery OTP</h2>" +
+                            "    <p>Hello,</p>" +
+                            "    <p>Your delivery OTP is:</p>" +
+                            "    <p class='otp'>" + otp + "</p>" +
+                            "    <p>This OTP is valid for <strong>5 minutes</strong>. Please use it to verify your delivery.</p>" +
                             "    <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'/>" +
-                            "    <p style='font-size: 12px; color: #999; text-align: center;'>If you did not request this, please contact support at <a href='mailto:support@paripakv.com' style='color: #4CAF50;'>support@paripakv.com</a>.</p>" +
+                            "    <div class='footer'>" +
+                            "      If you did not request this, please contact support at <a href='mailto:support@paripakv.com'>support@paripakv.com</a>." +
+                            "    </div>" +
                             "  </div>" +
                             "</body>" +
                             "</html>";
 
-
             helper.setTo(users.getEmail());
-            helper.setSubject("Delivery OTP");
-            helper.setText(htmlContent, true); // true = HTML
+            helper.setSubject("Delivery OTP - FarmTech Paripakv");
+            helper.setText(htmlContent, true);
+            // true = HTML
 
             mailSender.send(mimeMessage);
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
@@ -292,23 +386,46 @@ public class OrderService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
             helper.setTo(users.getEmail());
-            helper.setSubject("Your Order Has Been Delivered - Invoice");
+            helper.setSubject("✅ Your Order Has Been Delivered - Paripakv Invoice");
 
             String htmlContent =
-                    "<html>" +
-                            "<body style='font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9; padding: 0; margin: 0;'>" +
-                            "  <div style='max-width: 600px; margin: auto; background: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);'>" +
-                            "    <h2 style='color: #4CAF50; margin-top: 0;'>✅ Thank You for Shopping with Paripakav!</h2>" +
-                            "    <p style='font-size: 16px; color: #555;'>Hello <strong>" + users.getName() + "</strong>,</p>" +
-                            "    <p style='font-size: 15px; color: #555;'>We’re excited to let you know that your order for <strong>" + productListing.getName() + "</strong> has been <span style='color:#4CAF50; font-weight:bold;'>successfully delivered</span>.</p>" +
-                            "    <p style='font-size: 15px; color: #555;'>Your invoice is attached to this email for your records.</p>" +
-                            "    <a href='#' style='display: inline-block; background-color: #4CAF50; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 10px;'>View Order Details</a>" +
+                    "<!DOCTYPE html>" +
+                            "<html>" +
+                            "<head>" +
+                            "  <meta charset='UTF-8'>" +
+                            "  <meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                            "  <style>" +
+                            "    body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #333; }" +
+                            "    .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }" +
+                            "    h2 { color: #2E7D32; margin-top: 0; font-size: 22px; }" +
+                            "    p { font-size: 16px; line-height: 1.6; color: #555555; }" +
+                            "    .btn { display: inline-block; padding: 12px 24px; background-color: #2E7D32; color: #ffffff; text-decoration: none; border-radius: 5px; margin-top: 15px; font-weight: bold; }" +
+                            "    .footer { font-size: 12px; color: #999999; text-align: center; margin-top: 30px; }" +
+                            "    .footer a { color: #2E7D32; text-decoration: none; }" +
+                            "    @media only screen and (max-width: 600px) {" +
+                            "      .container { padding: 20px; }" +
+                            "      .btn { width: 100%; text-align: center; }" +
+                            "    }" +
+                            "  </style>" +
+                            "</head>" +
+                            "<body>" +
+                            "  <div class='container'>" +
+                            "    <h2>✅ Thank You for Shopping with Paripakv!</h2>" +
+                            "    <p>Hello <strong>" + users.getName() + "</strong>,</p>" +
+                            "    <p>We’re excited to inform you that your order for <strong>" + productListing.getName() + "</strong> has been <span style='color:#2E7D32; font-weight:bold;'>successfully delivered</span>.</p>" +
+                            "    <p>Your invoice is attached to this email for your records.</p>" +
+                            "    <a href='#' class='btn'>View Order Details</a>" +
                             "    <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'/>" +
-                            "    <p style='font-size: 12px; color: #999; text-align: center;'>If you have any questions, reply to this email or contact <a href='mailto:support@paripakv.com' style='color: #4CAF50; text-decoration: none;'>support@paripakv.com</a>.</p>" +
-                            "    <p style='font-size: 12px; color: #bbb; text-align: center;'>© 2025 Paripakav. All rights reserved.</p>" +
+                            "    <div class='footer'>" +
+                            "      If you have any questions, reply to this email or contact <a href='mailto:support@paripakv.com'>support@paripakv.com</a>.<br/>" +
+                            "      © 2025 Paripakv. All rights reserved." +
+                            "    </div>" +
                             "  </div>" +
                             "</body>" +
                             "</html>";
+
+            helper.setText(htmlContent, true);
+
 
 
             helper.setText(htmlContent, true);  // Set HTML email body

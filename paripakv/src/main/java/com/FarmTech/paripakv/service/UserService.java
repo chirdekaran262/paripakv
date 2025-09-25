@@ -43,6 +43,8 @@ public class UserService implements UserDetailsService {
     private final Cloudinary cloudinary;
     @Value("${backend.base-url}")
     private String backendUrl;
+    @Value("${frontend.base-url}")
+    private String frontendBaseUrl;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -69,29 +71,37 @@ public class UserService implements UserDetailsService {
         Users savedUser = repo.save(user);
 
         // ✅ Prepare a nice HTML mail
-        String subject = "🎉 Welcome to FarmTech Paripakv!";
+        String subject = "Welcome to FarmTech Paripakv!";
+
         String message = "<!DOCTYPE html>" +
                 "<html>" +
                 "<head>" +
+                "  <meta charset='UTF-8'>" +
+                "  <meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
                 "  <style>" +
-                "    body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }" +
-                "    .container { background: #fff; border-radius: 10px; padding: 20px; max-width: 600px; margin: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }" +
-                "    h2 { color: #4CAF50; }" +
-                "    p { color: #333; line-height: 1.5; }" +
-                "    .btn { display: inline-block; padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }" +
+                "    body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }" +
+                "    .email-container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }" +
+                "    h2 { color: #2E7D32; margin-bottom: 20px; }" +
+                "    p { color: #555555; line-height: 1.6; font-size: 16px; }" +
+                "    .btn { display: inline-block; padding: 12px 24px; background-color: #2E7D32; color: #ffffff; text-decoration: none; border-radius: 5px; margin-top: 20px; font-weight: bold; }" +
+                "    .footer { font-size: 14px; color: #999999; margin-top: 30px; }" +
                 "  </style>" +
                 "</head>" +
                 "<body>" +
-                "  <div class='container'>" +
-                "    <h2>Welcome, " + savedUser.getName() + " 👋</h2>" +
-                "    <p>Thank you for registering with <b>FarmTech Paripakv</b>! We are excited to have you onboard.</p>" +
-                "    <p>You can now explore our platform and make the most out of our services.</p>" +
-                "    <a href="+backendUrl+"`/login` class='btn'>Login Now</a>" +
-                "    <p style='margin-top:20px;'>If you did not register, please ignore this email.</p>" +
-                "    <p style='color:#777;'>Best Regards,<br/>The FarmTech Paripakv Team</p>" +
+                "  <div class='email-container'>" +
+                "    <h2>Hello " + savedUser.getName() + ",</h2>" +
+                "    <p>Welcome to <strong>FarmTech Paripakv</strong>! We are thrilled to have you join our platform.</p>" +
+                "    <p>Get started by logging into your account and exploring all the features we offer to make your farming experience smarter and more efficient.</p>" +
+                "    <a href='" + frontendBaseUrl + "/login' class='btn'>Login to Your Account</a>" +
+                "    <p>If you did not sign up for FarmTech Paripakv, please ignore this email.</p>" +
+                "    <div class='footer'>" +
+                "      <p>Best regards,<br/>The FarmTech Paripakv Team<br/>Krishivision Organization</p>" +
+                "      <p>Email: krishivision.tech@gmail.com</p>" +
+                "    </div>" +
                 "  </div>" +
                 "</body>" +
                 "</html>";
+
 
         // ✅ Send the mail
         emailService.sendEmail(savedUser.getEmail(), subject, message);
@@ -182,29 +192,37 @@ public class UserService implements UserDetailsService {
         String message = "<!DOCTYPE html>" +
                 "<html>" +
                 "<head>" +
+                "  <meta charset='UTF-8'>" +
+                "  <meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
                 "  <style>" +
-                "    body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }" +
-                "    .container { background: #fff; border-radius: 10px; padding: 20px; max-width: 600px; margin: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }" +
-                "    h2 { color: #4CAF50; }" +
-                "    p { color: #333; line-height: 1.5; }" +
-                "    .btn { display: inline-block; padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }" +
-                "    .footer { margin-top: 30px; font-size: 12px; color: #777; text-align: center; }" +
+                "    body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }" +
+                "    .email-container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }" +
+                "    h2 { color: #2E7D32; margin-bottom: 20px; }" +
+                "    p { color: #555555; line-height: 1.6; font-size: 16px; }" +
+                "    .btn { display: inline-block; padding: 12px 24px; background-color: #2E7D32; color: #ffffff; text-decoration: none; border-radius: 5px; margin-top: 20px; font-weight: bold; }" +
+                "    .footer { font-size: 14px; color: #999999; margin-top: 30px; text-align: center; }" +
+                "    @media only screen and (max-width: 600px) {" +
+                "      .email-container { padding: 20px; }" +
+                "      .btn { width: 100%; text-align: center; }" +
+                "    }" +
                 "  </style>" +
                 "</head>" +
                 "<body>" +
-                "  <div class='container'>" +
+                "  <div class='email-container'>" +
                 "    <h2>Password Reset Request 🔑</h2>" +
                 "    <p>Hello " + user.getName() + ",</p>" +
-                "    <p>We received a request to reset your password for your <b>FarmTech Paripakv</b> account.</p>" +
+                "    <p>We received a request to reset your password for your <strong>FarmTech Paripakv</strong> account.</p>" +
                 "    <p>Click the button below to securely reset your password:</p>" +
                 "    <a href='" + resetLink + "' class='btn'>Reset Password</a>" +
-                "    <p>If you did not request a password reset, please ignore this email. Your account remains secure.</p>" +
+                "    <p>If you did not request a password reset, you can safely ignore this email. Your account remains secure.</p>" +
                 "    <div class='footer'>" +
-                "      &copy; 2025 FarmTech Paripakv | Empowering Indian Farmers 🌱" +
+                "      &copy; 2025 FarmTech Paripakv | Empowering Indian Farmers 🌱<br/>" +
+                "      Email: krishivision.tech@gmail.com" +
                 "    </div>" +
                 "  </div>" +
                 "</body>" +
                 "</html>";
+
 
         emailService.sendEmail(user.getEmail(), subject, message);
 

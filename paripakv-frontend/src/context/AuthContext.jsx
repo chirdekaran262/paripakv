@@ -77,10 +77,10 @@
 // };
 
 // export const useAuth = () => useContext(AuthContext);
-
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import * as jwt_decode from 'jwt-decode';
 
 const AuthContext = createContext();
 
@@ -92,36 +92,29 @@ export const AuthProvider = ({ children }) => {
     const [currUserAddress, setCurrUserAddress] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
 
-    useEffect(() => {
-        const token = Cookies.get('token');
-        console.log('AuthProvider token:', token);
-
-        if (token) {
-            setIsAuthenticated(true);
-            axios.get(`${import.meta.env.VITE_API_URL}/users/profile`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(res => {
-                    console.log("User role:", res.data.role);
-                    setUserRole(res.data.role);
-                    setUserId(res.data.id);
-                    setCurrUserAddress(res.data.address);
-                    setCurrentUser(res.data);
-                })
-                .catch(err => {
-                    console.error("Error fetching role:", err);
-                })
-                .finally(() => setLoading(false));
-        } else {
-            setIsAuthenticated(false);
-            setLoading(false);
+    // Auto logout function
+    const setupAutoLogout = (token) => {
+        try {
+            const decoded = jwt_decode(token);
+            const expTime = decoded.exp * 1000 - Date.now(); // milliseconds until expiration
+            if (expTime <= 0) {
+                logout();
+                return;
+            }
+            setTimeout(() => {
+                logout();
+            }, expTime);
+        } catch (err) {
+            console.error("Error decoding token:", err);
+            logout();
         }
-    }, []);
+    };
 
     const login = (token) => {
         Cookies.set('token', token, { expires: 7, path: '/' });
         console.log('Token set in cookies:', token);
         setIsAuthenticated(true);
+        setupAutoLogout(token); // <-- add auto-logout here
         axios.get(`${import.meta.env.VITE_API_URL}/users/profile`, {
             headers: { Authorization: `Bearer ${token}` }
         })
@@ -145,7 +138,35 @@ export const AuthProvider = ({ children }) => {
         setUserId(null);
         setCurrUserAddress(null);
         setCurrentUser(null);
+        window.location.href = '/login'; // redirect to login page
     };
+
+    useEffect(() => {
+        const token = Cookies.get('token');
+        console.log('AuthProvider token:', token);
+
+        if (token) {
+            setIsAuthenticated(true);
+            setupAutoLogout(token); // <-- add auto-logout here too
+            axios.get(`${import.meta.env.VITE_API_URL}/users/profile`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+                .then(res => {
+                    console.log("User role:", res.data.role);
+                    setUserRole(res.data.role);
+                    setUserId(res.data.id);
+                    setCurrUserAddress(res.data.address);
+                    setCurrentUser(res.data);
+                })
+                .catch(err => {
+                    console.error("Error fetching role:", err);
+                })
+                .finally(() => setLoading(false));
+        } else {
+            setIsAuthenticated(false);
+            setLoading(false);
+        }
+    }, []);
 
     return (
         <AuthContext.Provider value={{
@@ -157,3 +178,4 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+// import { createContext, useContext, useState, useEffect } from 'react';

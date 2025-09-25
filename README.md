@@ -11,7 +11,7 @@ Paripakv bridges the gap between **farmers, buyers, and transporters**, providin
 
 **Tech Stack:** React | Vite | Tailwind | W3.CSS | Spring Boot | PostgreSQL | Razorpay | Google OAuth
 
-**Live Demo:** [Frontend](https://paripakv-krishivision.onrender.com)
+**Live :** [Paripakv](https://paripakv-krishivision.onrender.com)
 
 > Transforming India’s agricultural supply chain with a secure, transparent, and efficient platform.
 

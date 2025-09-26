@@ -18,14 +18,22 @@ public class Review {
     private UUID buyerId;
 
     @Column(nullable = false)
+    private UUID farmerId;
+
+    @Column(nullable = false, unique = true)
     private UUID orderId;
 
     @Column(nullable = false)
-    private int rating; // From 1 to 5
+    private int rating;  // 1–5 stars
 
     @Column(length = 1000)
     private String comment;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

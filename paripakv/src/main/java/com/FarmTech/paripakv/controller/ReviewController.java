@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
 @RestController
 @RequestMapping("/reviews")
 @CrossOrigin(origins = "*")
@@ -25,26 +24,33 @@ public class ReviewController {
     @PostMapping
     @PreAuthorize("hasRole('BUYER')")
     public ResponseEntity<Review> addReview(@RequestBody Review review, Authentication auth) {
-        String email = auth.getName(); // Authenticated user's email
+        String email = auth.getName();
         Review savedReview = service.addReview(review, email);
-        return new ResponseEntity<>(savedReview, HttpStatus.CREATED); // 201 Created
+        return new ResponseEntity<>(savedReview, HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<Review>> getAllReviews() {
-        List<Review> reviews = service.getAll();
-        return ResponseEntity.ok(reviews); // 200 OK
+        return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/buyer/{buyerId}")
     public ResponseEntity<List<Review>> getReviewsByBuyer(@PathVariable UUID buyerId) {
-        List<Review> reviews = service.getReviewsByBuyer(buyerId);
-        return ResponseEntity.ok(reviews); // 200 OK
+        return ResponseEntity.ok(service.getReviewsByBuyer(buyerId));
     }
 
     @GetMapping("/order/{orderId}")
     public ResponseEntity<List<Review>> getByOrder(@PathVariable UUID orderId) {
-        List<Review> reviews = service.getByOrder(orderId);
-        return ResponseEntity.ok(reviews); // 200 OK
+        return ResponseEntity.ok(service.getByOrder(orderId));
+    }
+
+    @GetMapping("/farmer/{farmerId}")
+    public ResponseEntity<List<Review>> getReviewsByFarmer(@PathVariable UUID farmerId) {
+        return ResponseEntity.ok(service.getReviewsByFarmer(farmerId));
+    }
+
+    @GetMapping("/averagerating")
+    public ResponseEntity<Double> getReviewsByAveragerating(@RequestParam UUID farmerId) {
+        return ResponseEntity.ok(service.getAverageRatingForFarmer(farmerId));
     }
 }

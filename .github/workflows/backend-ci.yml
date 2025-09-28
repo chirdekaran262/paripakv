@@ -2,9 +2,9 @@ name: Backend CI
 
 on:
   push:
-    branches: [ "main" ]   # Run pipeline when pushing to main
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]   # Run pipeline on PRs to main
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -12,13 +12,14 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3   # Download your code
+        uses: actions/checkout@v3
 
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: '17'        # Use Java 17 (Spring Boot supports it)
+          java-version: '17'
           distribution: 'temurin'
 
-      - name: Build with Maven
+      - name: Build with Maven (Backend)
+        working-directory: paripakv
         run: mvn clean install -DskipTests=false

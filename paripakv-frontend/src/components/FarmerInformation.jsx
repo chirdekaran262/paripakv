@@ -186,22 +186,22 @@ const FarmerInformation = ({ user, product, navigate }) => {
                         </div>
 
                         {averageRating > 0 && (
-                            <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-yellow-100 p-2 rounded-lg">
-                                        <Award className="w-5 h-5 text-yellow-600" />
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            {renderStars(averageRating, 'w-4 h-4')}
-                                            <span className="font-bold text-gray-800">{averageRating.toFixed(1)}</span>
+                                <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-yellow-100 p-2 rounded-lg">
+                                            <Award className="w-5 h-5 text-yellow-600" />
                                         </div>
-                                        <p className={`text-xs font-medium px-2 py-1 rounded-full border ${getRatingColor(averageRating)}`}>
-                                            {getRatingBadge(averageRating)} Rating
-                                        </p>
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                {renderStars(averageRating, 'w-4 h-4')}
+                                                <span className="font-bold text-gray-800">{averageRating.toFixed(1)}</span>
+                                            </div>
+                                            <p className={`text-xs font-medium px-2 py-1 rounded-full border ${getRatingColor(averageRating)}`}>
+                                                {getRatingBadge(averageRating)} Rating
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                         )}
 
                         <div className="space-y-2 pt-2">

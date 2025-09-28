@@ -87,8 +87,8 @@ export default function ProductListingList() {
             <div className="bg-gradient-to-r from-green-500 via-blue-10 to-yellow-500 text-white border-b border-white/10 shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 py-16">
                     <div className="text-center">
-                        <div className="flex items-center justify-center gap-4 mb-8">
-                            <div className="bg-green p-4 rounded-2xl backdrop-blur-sm">
+                        <div className="flex items-center justify-center gap-2 mb-8">
+                            <div className="bg-green p-2 rounded-2xl backdrop-blur-sm">
                                 <Leaf className="w-10 h-10" />
                             </div>
                             <div className="text-yellow-200">

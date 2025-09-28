@@ -30,7 +30,8 @@ import {
     X,
     CheckCircle,
     AlertCircle,
-    Sparkles
+    Sparkles,
+    Tag
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from 'react-hot-toast';
@@ -400,17 +401,20 @@ export default function ProductDetails() {
                                 <p className="text-xs sm:text-sm text-gray-600">Available</p>
                                 <p className="font-bold text-gray-800">{product.quantityKg} kg</p>
                             </div>
+
                             <div className="bg-white rounded-xl p-3 sm:p-4 text-center shadow-lg border border-gray-100">
-                                <Star className="w-6 h-6 text-yellow-500 mx-auto mb-1" />
-                                <p className="text-xs sm:text-sm text-gray-600">Rating</p>
-                                <p className="font-bold text-gray-800">4.8/5</p>
+                                <Tag className="w-6 h-6 text-purple-600 mx-auto mb-1" />
+                                <p className="text-xs sm:text-sm text-gray-600">Delivery Price</p>
+                                <p className="font-bold text-gray-800">₹{totalPrice.toLocaleString()}</p>
                             </div>
+
                             <div className="bg-white rounded-xl p-3 sm:p-4 text-center shadow-lg border border-gray-100">
-                                <Users className="w-6 h-6 text-blue-600 mx-auto mb-1" />
-                                <p className="text-xs sm:text-sm text-gray-600">Orders</p>
-                                <p className="font-bold text-gray-800">120+</p>
+                                <Truck className="w-6 h-6 text-blue-600 mx-auto mb-1" />
+                                <p className="text-xs sm:text-sm text-gray-600">Delivery</p>
+                                <p className="font-bold text-gray-800">12 hours</p>
                             </div>
                         </div>
+
                     </div>
 
                     {/* Product Details Section */}

@@ -1,6 +1,8 @@
 package com.FarmTech.paripakv.service;
 
 import com.FarmTech.paripakv.dto.CompleteProfileRequest;
+import com.FarmTech.paripakv.exception.InvalidDataException;
+import com.FarmTech.paripakv.exception.UserAlreadyExistsException;
 import com.FarmTech.paripakv.model.AuthProvider;
 import com.FarmTech.paripakv.model.PasswordResetToken;
 import com.FarmTech.paripakv.model.UserRole;
@@ -51,20 +53,30 @@ public class UserService implements UserDetailsService {
         return repo.findByEmail(email);
     }
 
-    public Users register(Users user, MultipartFile profileImage) throws IOException, MessagingException {
-        
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
+    public Users register(Users user, MultipartFile profileImage) throws IOException, MessagingException, UserAlreadyExistsException, InvalidDataException {
+        // ✅ 1. Check if user already exists
+        if (repo.existsByEmail(user.getEmail())) {
+            throw new UserAlreadyExistsException("User already exists with email: " + user.getEmail());
         }
 
-        String filename = UUID.randomUUID() + "_" + profileImage.getOriginalFilename();
-        System.out.println(filename);
+        // ✅ 2. Validate mandatory fields
+        if (user.getName() == null || user.getEmail() == null || user.getPassword() == null ||
+                user.getMobile() == null || user.getAadhaar() == null) {
+            throw new InvalidDataException("Please fill all mandatory fields correctly.");
+        }
 
-        Map uploadResult = cloudinary.uploader().upload(profileImage.getBytes(),
-                ObjectUtils.asMap("folder", "profile/"));
+        if (profileImage != null && !profileImage.isEmpty()) {
+            File dir = new File(uploadDir);
+            if (!dir.exists()) dir.mkdirs();
 
-        user.setImageUrl(uploadResult.get("secure_url").toString());
+            String filename = UUID.randomUUID() + "_" + profileImage.getOriginalFilename();
+            System.out.println(filename);
+
+            Map uploadResult = cloudinary.uploader().upload(profileImage.getBytes(),
+                    ObjectUtils.asMap("folder", "profile/"));
+
+            user.setImageUrl(uploadResult.get("secure_url").toString());
+        }
         user.setPassword(encoder.encode(user.getPassword()));
         System.out.println(user.getImageUrl());
 

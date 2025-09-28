@@ -2,6 +2,8 @@ package com.FarmTech.paripakv.controller;
 
 import com.FarmTech.paripakv.dto.AuthRequest;
 import com.FarmTech.paripakv.dto.CompleteProfileRequest;
+import com.FarmTech.paripakv.exception.InvalidDataException;
+import com.FarmTech.paripakv.exception.UserAlreadyExistsException;
 import com.FarmTech.paripakv.model.Users;
 import com.FarmTech.paripakv.repository.UserRepository;
 import com.FarmTech.paripakv.security.JwtUtil;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,14 +45,38 @@ public class UserController {
 
 
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Users> register(
+    public ResponseEntity<Map<String, Object>> register(
             @RequestPart("users") Users users,
             @RequestPart("profileImage") MultipartFile profileImage) throws IOException, MessagingException {
 
-        Users registered = userService.register(users, profileImage);
-        users.setProfileCompleted(true);
-        return new ResponseEntity<>(registered, HttpStatus.CREATED);
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Users registered = userService.register(users, profileImage);
+            registered.setProfileCompleted(true);
+
+            response.put("status", "success");
+            response.put("message", "Registration successful!");
+            response.put("data", registered);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+        } catch (UserAlreadyExistsException ex) {
+            response.put("status", "error");
+            response.put("message", "User already exists. Please login.");
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+
+        } catch (InvalidDataException ex) {
+            response.put("status", "error");
+            response.put("message", "Invalid data. Please check your inputs.");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+        } catch (Exception ex) {
+            response.put("status", "error");
+            response.put("message", "Server error. Please try again later.");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
 
 
     @PostMapping("/login")

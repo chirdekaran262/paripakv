@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect import
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { Tractor, UserPlus, Mail, Lock, User, Phone, CreditCard } from 'lucide-react';
-import googleIcon from '../assets/google.svg'; // Ensure this path is correct
+import googleIcon from '../assets/google.svg';
 import { useTranslation } from 'react-i18next';
 
 export default function Register() {
@@ -21,27 +21,29 @@ export default function Register() {
         pincode: ''
     });
 
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
+    const [profileImage, setProfileImage] = useState(null);
 
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const [profileImage, setProfileImage] = useState(null);
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setMessage("");
 
         try {
             const formDataToSend = new FormData();
-
-            // Send all fields as JSON in a single "users" part
             formDataToSend.append(
                 "users",
                 new Blob([JSON.stringify(formData)], { type: "application/json" })
             );
 
-            // Add file if exists
             if (profileImage) {
                 formDataToSend.append("profileImage", profileImage);
             }
@@ -49,41 +51,31 @@ export default function Register() {
             const response = await axios.post(
                 `${import.meta.env.VITE_API_URL}/users/register`,
                 formDataToSend,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
+                { headers: { "Content-Type": "multipart/form-data" } }
             );
 
-            console.log(response.data);
-            alert("🎉 Registration successful!");
+            setMessage(`🎉 ${response.data.message}`);
             navigate("/login");
+
         } catch (err) {
-            console.error(err);
-            if (err.response?.status === 409) {
-                alert("❌ User already exists. Please login.");
-                navigate("/login");
-                return;
-            } else if (err.response?.status === 400) {
-                alert("❌ Invalid data. Please check your inputs.");
-                return;
+            if (err.response && err.response.data && err.response.data.message) {
+                setMessage(`❌ ${err.response.data.message}`);
+            } else if (err.message === "Network Error") {
+                setMessage("❌ Network error. Please check your connection.");
+            } else {
+                setMessage("❌ Registration failed. Please try again.");
             }
-            else if (err.response?.status === 500) {
-                alert("❌ Server error. Please try again later.");
-                return;
-            }
-            else if (err.message === "Network Error") {
-                alert("❌ Network error. Please check your connection.");
-                return;
-            }
-            else {
-                alert("❌ Registration failed");
-            }
+        } finally {
+            setLoading(false);
         }
     };
 
-
+    useEffect(() => {
+        if (message) {
+            const timer = setTimeout(() => setMessage(""), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
 
     const handleGoogleLogin = () => {
         window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`;
@@ -94,9 +86,9 @@ export default function Register() {
         <div className="min-h-screen bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300 flex flex-col relative overflow-hidden">
             {/* Background decorative elements */}
             <div className="absolute inset-0 z-0">
-                <div className="absolute top-0 -left-4 w-72 h-72 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob"></div>
-                <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-2000"></div>
-                <div className="absolute -bottom-8 left-20 w-72 h-72 bg-lime-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-4000"></div>
+                <div className="absolute top-0 -left-4 w-72 h-72 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-pulse"></div>
+                <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-pulse" style={{ animationDelay: '2000ms' }}></div>
+                <div className="absolute -bottom-8 left-20 w-72 h-72 bg-lime-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-pulse" style={{ animationDelay: '4000ms' }}></div>
             </div>
 
             {/* Navbar with glassmorphism */}
@@ -119,12 +111,20 @@ export default function Register() {
             <div className="flex-1 flex items-center justify-center p-6 relative z-10">
                 <div className="bg-gradient-to-br from-green-200 via-blue-50 to-yellow-400 backdrop-blur-md rounded-2xl shadow-xl p-8 w-full max-w-md border border-white/50 hover:bg-white/85 transition-all duration-300">
                     <h2 className="text-3xl font-bold text-green-800 mb-3 text-center">{t('createAccount')} 🌾</h2>
-                    <p className="text-sm text-green-700 mb-8 text-center">{t('')} Paripak as a Farmer, Buyer, or Transporter</p>
+                    <p className="text-sm text-green-700 mb-8 text-center">Join Paripak as a Farmer, Buyer, or Transporter</p>
+
+                    {/* Message display */}
+                    {message && (
+                        <div className={`fixed top-5 right-5 z-50 px-4 py-3 rounded shadow-lg transition-all duration-300 ${message.startsWith("🎉") ? "bg-green-500 text-white" : "bg-red-500 text-white"
+                            }`}>
+                            {message}
+                        </div>
+                    )}
 
                     {/* Google button */}
                     <button
                         onClick={handleGoogleLogin}
-                        className="w-full bg-white/90 hover:bg-white border border-white/50 text-white hover:text-black font-medium py-2.5 rounded-xl flex items-center justify-center gap-3 transition-all duration-300 shadow-sm hover:shadow"
+                        className="w-full bg-white/90 hover:bg-white border border-white/50 text-gray-700 hover:text-black font-medium py-2.5 rounded-xl flex items-center justify-center gap-3 transition-all duration-300 shadow-sm hover:shadow"
                     >
                         <img src={googleIcon} alt="Google" className="w-5 h-5" />
                         {t('continueWithGoogle')}
@@ -140,7 +140,7 @@ export default function Register() {
                         </div>
                     </div>
 
-                    {/* Form inputs - update all input containers with this pattern */}
+                    {/* Form */}
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {/* Full Name */}
                         <div className="space-y-1.5">
@@ -152,12 +152,14 @@ export default function Register() {
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-white-800 transition-all duration-200"
+                                    className="w-full pl-12 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-green-800 transition-all duration-200"
                                     required
                                     placeholder="John Doe"
                                 />
                             </div>
                         </div>
+
+                        {/* Email */}
                         <div className="space-y-1.5">
                             <label className="block text-sm font-semibold text-green-800">{t('email')}</label>
                             <div className="relative flex items-center group">
@@ -167,9 +169,9 @@ export default function Register() {
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-white-800 transition-all duration-200"
+                                    className="w-full pl-12 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-green-800 transition-all duration-200"
                                     required
-                                    placeholder="JohnDoe@example.com"
+                                    placeholder="john.doe@example.com"
                                 />
                             </div>
                         </div>
@@ -184,7 +186,7 @@ export default function Register() {
                                     name="mobile"
                                     value={formData.mobile}
                                     onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-white-800 transition-all duration-200"
+                                    className="w-full pl-12 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-green-800 transition-all duration-200"
                                     required
                                     placeholder="1234567890"
                                 />
@@ -201,18 +203,18 @@ export default function Register() {
                                     name="aadhaar"
                                     value={formData.aadhaar}
                                     onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-white-800 transition-all duration-200"
+                                    className="w-full pl-12 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-green-800 transition-all duration-200"
                                     required
                                     placeholder="XXXX-XXXX-XXXX"
                                 />
                             </div>
                         </div>
 
-                        {/* Role Selection specific update */}
-                        <div className="">
-                            <label className="block text-sm font-semibold text-green-800">{t('')}</label>
-                            <div className="relative flex items-center group">
-                                <div className="absolute left-3 text-white-800 w-5 h-5 pointer-events-none">
+                        {/* Role Selection */}
+                        <div className="space-y-1.5">
+                            <label className="block text-sm font-semibold text-green-800">Role</label>
+                            <div className="relative flex items-center group bg-white">
+                                <div className="absolute left-3  text-green-800 w-5 h-5 pointer-events-none">
                                     {formData.role === 'FARMER' && '🌾'}
                                     {formData.role === 'BUYER' && '🛒'}
                                     {formData.role === 'TRANSPORTER' && '🚛'}
@@ -221,12 +223,12 @@ export default function Register() {
                                     name="role"
                                     value={formData.role}
                                     onChange={handleChange}
-                                    className="w-full pl-12 pr-10 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none text-white-800 appearance-none transition-all duration-200"
+                                    className="w-full  pl-12 pr-10 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none text-green-800 appearance-none transition-all duration-200"
                                     required
                                 >
-                                    <option value="FARMER" className="py-2 text-white-800">{t('farmer')}</option>
-                                    <option value="BUYER" className="py-2 text-white-800">{t('buyer')}</option>
-                                    <option value="TRANSPORTER" className="py-2 text-white-800">{t('transporter')}</option>
+                                    <option value="FARMER" className="py-2 text-green-800">{t('farmer')}</option>
+                                    <option value="BUYER" className="py-2 text-green-800">{t('buyer')}</option>
+                                    <option value="TRANSPORTER" className="py-2 text-green-800">{t('transporter')}</option>
                                 </select>
                                 <div className="absolute right-3 pointer-events-none">
                                     <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -239,19 +241,20 @@ export default function Register() {
                         {/* Password */}
                         <div className="space-y-1.5">
                             <label className="block text-sm font-semibold text-green-800">{t('password')}</label>
-                            <div className="relative flex items-center">
-                                <Lock className="absolute left-3 text-green-600/70 w-5 h-5" />
+                            <div className="relative flex items-center group">
+                                <Lock className="absolute left-3 text-green-600/70 w-5 h-5 group-hover:text-green-700 transition-colors duration-200" />
                                 <input
                                     type="password"
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-white-800 transition-all duration-200"
+                                    className="w-full pl-12 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-green-800 transition-all duration-200"
                                     required
                                     placeholder="••••••••"
                                 />
                             </div>
                         </div>
+
                         {/* Address */}
                         <div className="space-y-1.5">
                             <label className="block text-sm font-semibold text-green-800">{t('address')}</label>
@@ -261,7 +264,7 @@ export default function Register() {
                                 value={formData.address}
                                 onChange={handleChange}
                                 placeholder="House No, Street"
-                                className="w-full pl-4 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-white-800 transition-all duration-200"
+                                className="w-full pl-4 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-green-800 transition-all duration-200"
                                 required
                             />
                         </div>
@@ -275,7 +278,7 @@ export default function Register() {
                                 value={formData.village}
                                 onChange={handleChange}
                                 placeholder="Village Name"
-                                className="w-full pl-4 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-white-800 transition-all duration-200"
+                                className="w-full pl-4 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-green-800 transition-all duration-200"
                                 required
                             />
                         </div>
@@ -289,7 +292,7 @@ export default function Register() {
                                 value={formData.district}
                                 onChange={handleChange}
                                 placeholder="District"
-                                className="w-full pl-4 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-white-800 transition-all duration-200"
+                                className="w-full pl-4 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-green-800 transition-all duration-200"
                                 required
                             />
                         </div>
@@ -303,7 +306,7 @@ export default function Register() {
                                 value={formData.state}
                                 onChange={handleChange}
                                 placeholder="State"
-                                className="w-full pl-4 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-white-800 transition-all duration-200"
+                                className="w-full pl-4 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-green-800 transition-all duration-200"
                                 required
                             />
                         </div>
@@ -317,10 +320,11 @@ export default function Register() {
                                 value={formData.pincode}
                                 onChange={handleChange}
                                 placeholder="e.g. 400001"
-                                className="w-full pl-4 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-white-800 transition-all duration-200"
+                                className="w-full pl-4 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none placeholder-green-600/50 text-green-800 transition-all duration-200"
                                 required
                             />
                         </div>
+
                         {/* Profile Image Upload */}
                         <div className="space-y-1.5">
                             <label className="block text-sm font-semibold text-green-800">Profile Image</label>
@@ -329,13 +333,7 @@ export default function Register() {
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) => setProfileImage(e.target.files[0])}
-                                    className="w-full pl-3 pr-4 py-2.5 bg-white/60 hover:bg-white/80 
-                 focus:bg-white/95 border border-white/50 rounded-xl 
-                 focus:ring-2 focus:ring-green-500/30 focus:border-transparent 
-                 outline-none text-green-800 transition-all duration-200 file:mr-4 
-                 file:py-2 file:px-4 file:rounded-full file:border-0 
-                 file:text-sm file:font-semibold file:bg-green-100 
-                 file:text-green-700 hover:file:bg-green-200"
+                                    className="w-full pl-3 pr-4 py-2.5 bg-white/60 hover:bg-white/80 focus:bg-white/95 border border-white/50 rounded-xl focus:ring-2 focus:ring-green-500/30 focus:border-transparent outline-none text-green-800 transition-all duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-100 file:text-green-700 hover:file:bg-green-200"
                                     required
                                 />
                             </div>
@@ -344,19 +342,29 @@ export default function Register() {
                         {/* Submit button */}
                         <button
                             type="submit"
-                            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-green-600/20 hover:shadow-xl"
-
+                            disabled={loading}
+                            className={`w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-green-600/20 hover:shadow-xl ${loading ? "opacity-70 cursor-not-allowed" : ""
+                                }`}
                         >
-                            <UserPlus className="w-5 h-5" />
-                            {t('createAccount')}
+                            {loading ? (
+                                <>
+                                    <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                    </svg>
+                                    Processing...
+                                </>
+                            ) : (
+                                <>
+                                    <UserPlus className="w-5 h-5" />
+                                    {t('createAccount')}
+                                </>
+                            )}
                         </button>
                     </form>
 
                     {/* Footer text */}
                     <p className="text-sm text-center mt-6 text-green-700">
-                        Already have an account?{' '}
-                        <Link to="/login" className="text-green-800 font-semibold hover:text-green-900 transition-colors duration-200">
-                        </Link>
                         {t('alreadyHaveAccount')}{' '}
                         <Link to="/login" className="text-green-800 font-semibold hover:text-green-900 transition-colors duration-200">
                             {t('signin')}

@@ -60,7 +60,13 @@ export default function Header() {
 
                         {/* User Actions & Profile Section */}
                         <div className="flex items-center space-x-4">
-
+                            <Link
+                                to="/help"
+                                className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300 hover:from-amber-600 hover:to-orange-600 text-white px-5 py-2.5 rounded-full flex items-center space-x-2 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 hover:text-black"
+                            >
+                                <span></span>
+                                <span>How It Works</span>
+                            </Link>
                             {/* Role-specific Actions */}
                             {isAuthenticated && (
                                 <>

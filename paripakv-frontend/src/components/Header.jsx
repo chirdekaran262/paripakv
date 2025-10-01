@@ -34,7 +34,7 @@ export default function Header() {
     if (loading) return null;
 
     return (
-        <nav className="sticky top-0 z-50 bg-gradient-to-br from-green-600 via-lime-100 to-yellow-200 backdrop-blur-xl border-b border-gray-200 shadow-sm">
+        <nav className="sticky top-0 z-50 bg-gradient-to-br from-green-600 via-lime-50 to-yellow-200 backdrop-blur-xl border-b border-gray-200 shadow-sm">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
 
@@ -129,6 +129,7 @@ export default function Header() {
                                                 </Link>
                                             </>
                                         )}
+                                        {/* <Link to="/wallet" className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300 hover:from-amber-600 hover:to-orange-600 text-white px-5 py-2.5 rounded-full flex items-center space-x-2 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 hover:text-black">Wallet</Link> */}
                                     </div>
 
                                     {/* Notifications Button */}
@@ -147,6 +148,7 @@ export default function Header() {
                             {/* Profile Dropdown or Login */}
                             {isAuthenticated ? (
                                 <div className="relative" ref={dropdownRef}>
+
                                     <button
                                         onClick={() => setShowDropdown(!showDropdown)}
                                         className={`flex items-center space-x-2 bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-1 rounded-full transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 ${showDropdown ? 'ring-2 ring-green-300' : ''}`}
@@ -354,6 +356,9 @@ export default function Header() {
                                         <span className="font-medium">Notifications</span>
                                         <span className="ml-auto w-2 h-2 bg-red-500 rounded-full"></span>
                                     </button>
+
+                                    {/* <Link to="/wallet" className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl text-center font-semibold shadow-md"
+                                        onClick={() => setMenuOpen(false)}>Wallet</Link> */}
                                 </div>
 
                                 {/* Profile Actions */}
@@ -387,6 +392,14 @@ export default function Header() {
                                 🔐 Sign In
                             </Link>
                         )}
+                        <Link
+                            to="/help"
+                            className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl text-center font-semibold shadow-md"
+                            onClick={() => setMenuOpen(false)}
+                        >
+                            <span></span>
+                            <span>How It Works</span>
+                        </Link>
                     </div>
                 </div>
             )}

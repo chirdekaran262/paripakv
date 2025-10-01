@@ -359,6 +359,14 @@ export default function Header() {
 
                                     {/* <Link to="/wallet" className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl text-center font-semibold shadow-md"
                                         onClick={() => setMenuOpen(false)}>Wallet</Link> */}
+                                    <Link
+                                        to="/help"
+                                        className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl text-center font-semibold shadow-md"
+                                        onClick={() => setMenuOpen(false)}
+                                    >
+                                        <span></span>
+                                        <span>How It Works</span>
+                                    </Link>
                                 </div>
 
                                 {/* Profile Actions */}
@@ -392,14 +400,7 @@ export default function Header() {
                                 🔐 Sign In
                             </Link>
                         )}
-                        <Link
-                            to="/help"
-                            className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl text-center font-semibold shadow-md"
-                            onClick={() => setMenuOpen(false)}
-                        >
-                            <span></span>
-                            <span>How It Works</span>
-                        </Link>
+
                     </div>
                 </div>
             )}

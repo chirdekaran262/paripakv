@@ -62,9 +62,9 @@ export default function Header() {
                         <div className="flex items-center space-x-4">
                             <Link
                                 to="/help"
-                                className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300 hover:from-amber-600 hover:to-orange-600 text-white px-5 py-2.5 rounded-full flex items-center space-x-2 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 hover:text-black"
+                                className="hidden md:flex bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300 hover:from-amber-600 hover:to-orange-600 text-white px-5 py-2.5 rounded-full items-center space-x-2 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 hover:text-black"
                             >
-                                <span></span>
+                                <Info className="w-4 h-4" />
                                 <span>How It Works</span>
                             </Link>
                             {/* Role-specific Actions */}
@@ -241,13 +241,13 @@ export default function Header() {
                             {/* Mobile Menu Button */}
                             <button
                                 onClick={() => setMenuOpen(!menuOpen)}
-                                className="lg:hidden relative p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
+                                className="lg:hidden relative p-3 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
                                 aria-label={menuOpen ? "Close menu" : "Open menu"}
                             >
                                 {menuOpen ? (
-                                    <X className="w-6 h-6 text-gray-600" />
+                                    <X className="w-5 h-5 text-gray-600" />
                                 ) : (
-                                    <Menu className="w-6 h-6 text-gray-600" />
+                                    <Menu className="w-5 h-5 text-gray-600" />
                                 )}
                             </button>
                         </div>
@@ -258,7 +258,24 @@ export default function Header() {
             {/* Mobile Navigation */}
             {menuOpen && (
                 <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg fixed inset-0 z-50 overflow-y-auto">
-
+                    <div className="flex justify-end p-4">
+                        <button
+                            onClick={() => setMenuOpen(false)}
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        >
+                            <X className="w-6 h-6 text-gray-600" />
+                        </button>
+                    </div>
+                    <Link
+                        to="/help"
+                        className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl text-center font-semibold shadow-md"
+                        onClick={() => setMenuOpen(false)}
+                    >
+                        <div className="flex items-center justify-center space-x-2">
+                            <Info className="w-4 h-4" />
+                            <span>How It Works</span>
+                        </div>
+                    </Link>
                     <div className="px-6 py-6 space-y-4">
 
                         {isAuthenticated ? (
@@ -359,14 +376,7 @@ export default function Header() {
 
                                     {/* <Link to="/wallet" className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl text-center font-semibold shadow-md"
                                         onClick={() => setMenuOpen(false)}>Wallet</Link> */}
-                                    <Link
-                                        to="/help"
-                                        className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl text-center font-semibold shadow-md"
-                                        onClick={() => setMenuOpen(false)}
-                                    >
-                                        <span></span>
-                                        <span>How It Works</span>
-                                    </Link>
+
                                 </div>
 
                                 {/* Profile Actions */}
@@ -392,12 +402,16 @@ export default function Header() {
                                 </div>
                             </>
                         ) : (
+
                             <Link
                                 to="/login"
                                 className="block w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 px-6 rounded-xl text-center font-semibold shadow-md"
                                 onClick={() => setMenuOpen(false)}
                             >
-                                🔐 Sign In
+                                <div className="flex items-center justify-center space-x-2">
+                                    <LogIn className="w-4 h-4" />
+                                    <span>Sign In</span>
+                                </div>
                             </Link>
                         )}
 

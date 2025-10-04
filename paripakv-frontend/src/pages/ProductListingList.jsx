@@ -84,7 +84,7 @@ export default function ProductListingList() {
             <Header />
 
             {/* Hero Section with TransporterDashboard color scheme */}
-            <div className="bg-gradient-to-r from-green-500 via-blue-10 to-yellow-500 text-white border-b border-white/10 shadow-lg">
+            <div className="bg-gradient-to-r from-green-600 via-blue-10 to-yellow-400 text-white border-b border-white/10 shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 py-16">
                     <div className="text-center">
                         <div className="flex items-center justify-center gap-2 mb-8">

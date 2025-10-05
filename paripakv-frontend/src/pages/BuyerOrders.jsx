@@ -32,7 +32,6 @@ export default function BuyerOrders() {
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
 
-    // Review Modal State
     const [showReviewModal, setShowReviewModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [reviewRating, setReviewRating] = useState(0);

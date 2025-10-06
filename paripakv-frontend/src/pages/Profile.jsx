@@ -16,7 +16,6 @@ export default function Profile() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const baseUrl = import.meta.env.VITE_API_URL;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
 

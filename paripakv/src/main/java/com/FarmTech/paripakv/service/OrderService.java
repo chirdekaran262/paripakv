@@ -1,5 +1,7 @@
 package com.FarmTech.paripakv.service;
 
+import com.FarmTech.paripakv.exception.InsufficientBalanceException;
+import com.FarmTech.paripakv.exception.UserNotFoundException;
 import com.FarmTech.paripakv.model.*;
 import com.FarmTech.paripakv.repository.OrderRepository;
 import com.FarmTech.paripakv.repository.ProductListingRepository;
@@ -9,6 +11,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -45,11 +49,15 @@ public class OrderService {
     private final Cloudinary cloudinary;
 
     private final EmailTemplateService emailTemplateService;
+    private final WalletService walletService;
 
-    public Order placeOrder(Order order, String buyerEmail) throws MessagingException {
-        // Fetch buyer details
+    @Transactional
+    public Order placeOrder(Order order, String buyerEmail)
+            throws MessagingException, UserNotFoundException, InsufficientBalanceException {
+
         var buyer = userRepo.findByEmail(buyerEmail);
         order.setBuyerId(buyer.getId());
+
         String fullAddress = buyer.getAddress() + ", " +
                 buyer.getVillage() + ", " +
                 buyer.getDistrict() + ", " +
@@ -57,30 +65,45 @@ public class OrderService {
                 buyer.getPincode();
 
         // Fetch product listing and farmer
-        ProductListing productListing = productListingRepo.findById(order.getListingId()).orElse(null);
-        if (productListing != null) {
-            Optional<Users> farmerOpt = userRepo.findById(productListing.getFarmerId());
-            if (farmerOpt.isPresent()) {
-                Users farmer = farmerOpt.get();
-                System.out.println(farmer);
-                // Send email to farmer
-                String farmerEmailContent = emailTemplateService.buildFarmerEmailContent(farmer.getName(), buyer.getName(), productListing.getName(), order.getTotalPrice(), fullAddress);
-                emailService.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent);
-                System.out.println(order);
-                // Send email to buyer
-                String buyerEmailContent = emailTemplateService.buildBuyerEmailContent(buyer.getName(), productListing.getName(), order.getListingId());
-                emailService.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent);
-            }
+        ProductListing productListing = productListingRepo.findById(order.getListingId())
+                .orElseThrow(() -> new RuntimeException("Listing not found"));
 
-        }
+        Users farmer = userRepo.findById(productListing.getFarmerId())
+                .orElseThrow(() -> new RuntimeException("Farmer not found"));
 
+        // Send emails (this can stay here)
+        String farmerEmailContent = emailTemplateService.buildFarmerEmailContent(
+                farmer.getName(),
+                buyer.getName(),
+                productListing.getName(),
+                order.getTotalPrice(),
+                fullAddress
+        );
 
+        String buyerEmailContent = emailTemplateService.buildBuyerEmailContent(
+                buyer.getName(),
+                productListing.getName(),
+                order.getListingId()
+        );
+
+        // Save order
         order.setDeliveryAddress(fullAddress);
-
-        // Set default delivery status
         order.setDeliveryStatus(DeliveryStatus.PENDING);
-        return repo.save(order);
+        Order savedOrder = repo.save(order);
+
+        // Deduct from wallet and create reservation
+        walletService.reserveForOrder(
+                savedOrder.getBuyerId(),
+                savedOrder.getId(),
+                BigDecimal.valueOf(savedOrder.getTotalPrice())
+        );
+
+        emailService.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent);
+        emailService.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent);
+
+        return savedOrder;
     }
+
 
     public List<Order> getOrdersByBuyer(UUID buyerId) {
         return repo.findByBuyerId(buyerId);
@@ -90,7 +113,7 @@ public class OrderService {
         return repo.findAll();
     }
 
-    public Order updateStatus(UUID id, OrderStatus status, double quantity) throws MessagingException {
+    public Order updateStatus(UUID id, OrderStatus status, double quantity) throws MessagingException, UserNotFoundException {
 
         Order order = repo.findById(id).orElseThrow();
         Users buyer = userRepo.findById(order.getBuyerId())
@@ -120,7 +143,14 @@ public class OrderService {
                 throw new RuntimeException("Product listing not found for id: " + order.getListingId());
             }
         }
-
+        else{
+            walletService.refund(order.getBuyerId(),order, BigDecimal.valueOf(order.getTotalPrice()),"Order Cancelled By Farmer");
+            emailService.sendEmail(
+                    buyer.getEmail(),
+                    "✅ Your Order Has Been Confirmed - Paripakv",
+                    "Sorry Your order has been cancelled by Farmer, your reserved amount is refund to to your account"
+            );
+        }
         order.setStatus(status);
         return repo.save(order);
     }
@@ -434,7 +464,7 @@ public class OrderService {
             helper.addAttachment("Invoice.pdf", invoiceFile);
 
             mailSender.send(mimeMessage);
-
+            walletService.transferAfterOtp(order);
             System.out.println("Delivery confirmation email sent to " + users.getEmail());
         } catch (Exception e) {
             e.printStackTrace();

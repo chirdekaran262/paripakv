@@ -27,6 +27,7 @@ import ChatList from './components/ChatList';
 import ChatWindow from './components/ChatWindow';
 import PaymentPage from "./pages/PaymentPage";
 import Help from "./pages/Help";
+import WalletPage from "./pages/WalletPage";
 function App() {
 
   return (
@@ -80,6 +81,7 @@ function App() {
           <Route path="/chat/:otherUserId/:productId" element={<ChatWindow />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/help" element={<Help />} />
+          <Route path="/wallet" element={<WalletPage />} />
           {/* Add more routes as needed */}
         </Routes>
       </AuthProvider>

@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-    Tractor, LogIn, Plus, User, Menu, Bell, Settings, Home, Grid3X3, Info, MessageCircle, X
+    Tractor, LogIn, Plus, User, Menu, Bell, Settings, Home, Grid3X3, Info, MessageCircle, X,
+    Wallet // Add Wallet icon
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
@@ -34,7 +35,7 @@ export default function Header() {
     if (loading) return null;
 
     return (
-        <nav className="sticky top-0 z-50 bg-gradient-to-br from-green-600 via-lime-50 to-yellow-200 backdrop-blur-xl border-b border-gray-200 shadow-sm">
+        <nav className="sticky top-0 z-50 bg-gradient-to-br from-green-500 via-lime-100 to-yellow-300 backdrop-blur-xl border-b border-red-200 shadow-xl">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
 
@@ -71,6 +72,7 @@ export default function Header() {
                             {isAuthenticated && (
                                 <>
                                     <div className="hidden md:flex items-center space-x-3">
+                                        {/* Move Wallet to Profile section only */}
                                         {userRole === "BUYER" && (
                                             <>
                                                 <Link
@@ -189,8 +191,26 @@ export default function Header() {
                                                 </div>
                                             </div>
 
-                                            {/* Menu Items */}
+                                            {/* Menu Items - Move Wallet to top */}
                                             <div className="py-2">
+                                                <Link
+                                                    to="/wallet"
+                                                    className="flex items-center space-x-3 px-6 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-150"
+                                                    onClick={() => setShowDropdown(false)}
+                                                >
+                                                    <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                                        <Wallet className="w-5 h-5 text-purple-600" />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium">My Wallet</span>
+                                                        <span className="text-xs text-gray-500">Manage your funds</span>
+                                                    </div>
+                                                    <div className="ml-auto">
+                                                        <span className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full font-medium">
+                                                            ₹
+                                                        </span>
+                                                    </div>
+                                                </Link>
                                                 <Link
                                                     to="/profile"
                                                     className="flex items-center space-x-3 px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all duration-150"

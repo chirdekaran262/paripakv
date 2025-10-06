@@ -1,5 +1,7 @@
 package com.FarmTech.paripakv.controller;
 
+import com.FarmTech.paripakv.exception.InsufficientBalanceException;
+import com.FarmTech.paripakv.exception.UserNotFoundException;
 import com.FarmTech.paripakv.model.Order;
 import com.FarmTech.paripakv.model.OrderStatus;
 import com.FarmTech.paripakv.model.ProductListing;
@@ -37,9 +39,10 @@ public class OrderController {
 
     @PostMapping
     @PreAuthorize("hasRole('BUYER')")
-    public ResponseEntity<Order> placeOrder(@RequestBody Order order, Authentication auth) throws MessagingException {
+    public ResponseEntity<Order> placeOrder(@RequestBody Order order, Authentication auth) throws MessagingException, UserNotFoundException, InsufficientBalanceException {
         String buyerEmail = auth.getName();
         Order placedOrder = service.placeOrder(order, buyerEmail);
+        System.out.println(placedOrder);
         return new ResponseEntity<>(placedOrder, HttpStatus.CREATED); // 201 Created
     }
 
@@ -66,7 +69,7 @@ public class OrderController {
             return ResponseEntity.ok(updatedOrder); // 200 OK
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Invalid status value."); // 400 Bad Request
-        } catch (MessagingException e) {
+        } catch (MessagingException | UserNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

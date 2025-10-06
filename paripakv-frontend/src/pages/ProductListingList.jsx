@@ -1,12 +1,15 @@
-import { use, useEffect, useState } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, MapPin, Calendar, Package, IndianRupee, Heart, Star, Eye, MessageCircle, ShoppingCart, Sparkles, TrendingUp, Users, Leaf, Award } from 'lucide-react';
-import Cookies from 'js-cookie';
-import Header from "../components/Header";
-import { useAuth } from '../context/AuthContext';
-import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../context/AuthContext";
+import Header from "../components/Header";
+import {
+    Leaf, Package, Users, MapPin, Filter, Search, Shield,
+    TrendingUp, Truck, Heart, Share2, Loader, AlertCircle,
+    Info, ChevronDown, IndianRupee, Sparkles, Star, ShoppingCart, MessageCircle, Eye
+} from "lucide-react";
+import axios from "axios";
+import Cookies from 'js-cookie';
 
 export default function ProductListingList() {
     const { isAuthenticated } = useAuth();
@@ -18,18 +21,33 @@ export default function ProductListingList() {
     const [filters, setFilters] = useState({ village: '', name: '' });
     const [imageErrorMap, setImageErrorMap] = useState({});
     const [favorites, setFavorites] = useState(new Set());
+    const [isLoading, setIsLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [page, setPage] = useState(1);
     const baseUrl = import.meta.env.VITE_API_URL
     const userId = useAuth().userId;
+    const [debouncedFilters, setDebouncedFilters] = useState(filters);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedFilters(filters);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [filters]);
+
     useEffect(() => {
         const fetchListings = async () => {
             try {
                 setLoading(true);
+                setIsLoading(true);
                 setError(null);
                 const token = Cookies.get('token');
 
                 const params = new URLSearchParams();
-                if (filters.village) params.append('village', filters.village);
-                if (filters.name) params.append('name', filters.name);
+                if (debouncedFilters.village) params.append('village', debouncedFilters.village);
+                if (debouncedFilters.name) params.append('name', debouncedFilters.name);
 
 
                 const url = `${import.meta.env.VITE_API_URL}/listings${params.toString() ? `?${params.toString()}` : ''}`;
@@ -48,11 +66,12 @@ export default function ProductListingList() {
                 setListings([]);
             } finally {
                 setLoading(false);
+                setIsLoading(false);
             }
         };
 
         fetchListings();
-    }, [filters]);
+    }, [debouncedFilters]);
 
     const toggleFavorite = (id) => {
         setFavorites(prev => {
@@ -70,117 +89,174 @@ export default function ProductListingList() {
         setImageErrorMap(prev => ({ ...prev, [itemId]: true }));
     };
 
-    return (
-        <div className="min-h-screen bg-gradient-to-r from-green-600 via-lime-400 to-yellow-300">
-            <Helmet>
-                <title>Paripakv | Empowering Farmers with Technology</title>
-                <meta
-                    name="description"
-                    content="Paripakv is a platform for farmers, buyers, and transporters to connect, sell, and manage agricultural products with ease."
-                />
-                <meta name="robots" content="index, follow" />
-            </Helmet>
+    const renderContent = () => {
+        if (isLoading && page === 1) {
+            return (
+                <div className="flex flex-col items-center justify-center min-h-[400px] bg-white rounded-2xl shadow-md">
+                    <Loader className="w-10 h-10 text-green-600 animate-spin mb-4" />
+                    <p className="text-gray-600 font-medium">Loading fresh products...</p>
+                </div>
+            );
+        }
 
+        if (error) {
+            return (
+                <div className="bg-red-50 rounded-2xl p-8 text-center">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+                        <AlertCircle className="w-8 h-8 text-red-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-red-900 mb-2">Unable to load products</h3>
+                    <p className="text-red-600">{error}</p>
+                    <button
+                        onClick={() => setPage(1)}
+                        className="mt-4 px-6 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                    >
+                        Try Again
+                    </button>
+                </div>
+            );
+        }
+
+        if (listings.length === 0) {
+            return (
+                <div className="bg-gray-50 rounded-2xl p-12 text-center">
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-6">
+                        <Package className="w-10 h-10 text-gray-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-3">No Products Found</h3>
+                    <p className="text-gray-600 mb-6">Try adjusting your search filters or check back later</p>
+                    <button
+                        onClick={() => setFilters({ village: '', name: '' })}
+                        className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                        Clear Filters
+                    </button>
+                </div>
+            );
+        }
+
+        return (
+            <div className="space-y-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* ...existing product cards mapping... */}
+                </div>
+
+                {hasMore && (
+                    <div className="text-center pt-4">
+                        <button
+                            onClick={() => setPage(p => p + 1)}
+                            disabled={loadingMore}
+                            className="px-8 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            {loadingMore ? (
+                                <span className="flex items-center gap-2">
+                                    <Loader className="w-4 h-4 animate-spin" />
+                                    Loading more...
+                                </span>
+                            ) : (
+                                'Load More Products'
+                            )}
+                        </button>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    return (
+        <div className="min-h-screen bg-gradient-to-b from-green-50 to-yellow-300">
             <Header />
 
-            {/* Hero Section with TransporterDashboard color scheme */}
-            <div className="bg-gradient-to-r from-green-600 via-blue-10 to-yellow-400 text-white border-b border-white/10 shadow-lg">
-                <div className="max-w-7xl mx-auto px-4 py-16">
-                    <div className="text-center">
-                        <div className="flex items-center justify-center gap-2 mb-8">
-                            <div className="bg-green p-2 rounded-2xl backdrop-blur-sm">
-                                <Leaf className="w-10 h-10" />
-                            </div>
-                            <div className="text-yellow-200">
+            {/* Hero Section - Similar to Help.jsx */}
+            <div className="bg-gradient-to-r from-green-600 to-emerald-700 text-white py-20 px-4">
+                <div className="max-w-6xl mx-auto text-center">
+                    <div className="flex items-center justify-center gap-3 mb-6">
+                        <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-sm">
+                            <Leaf className="w-12 h-12" />
+                        </div>
+                        <h1 className="text-5xl font-bold">Fresh Farm Products</h1>
+                    </div>
+                    <p className="text-xl text-green-100 max-w-3xl mx-auto">
+                        {t('connectMessage')}
+                    </p>
+                </div>
+            </div>
 
-                                <h1 className="text-4xl md:text-6xl font-bold mb-2">{t('freshFarmProducts')}</h1>
-                                <p className="text-green-50 text-lg">{t('connectMessage')}</p>
+            {/* Stats Section - Elevated like Help.jsx */}
+            <div className="max-w-6xl mx-auto px-4 -mt-10">
+                <div className="bg-white rounded-2xl shadow-xl p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-6 rounded-xl">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="bg-green-600 text-white p-2 rounded-lg">
+                                    <Package className="w-5 h-5" />
+                                </div>
+                                <span className="text-xs text-green-700 font-medium">FRESH</span>
                             </div>
+                            <p className="text-3xl font-bold text-gray-800 mb-1">{listings.length}</p>
+                            <p className="text-sm text-gray-600">{t('availableProducts')}</p>
                         </div>
 
-                        {/* Stats Grid matching TransporterDashboard */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                            <div className="bg-gradient-to-r from-green-50 via-blue-10 to-yellow-300 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-lg text-center text-green-800">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="bg-white/20 p-2 rounded-lg">
-                                        <Package className="w-5 h-5" />
-                                    </div>
-                                    <span className="text-xs text-green-600 font-medium">FRESH</span>
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-6 rounded-xl">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="bg-blue-600 text-white p-2 rounded-lg">
+                                    <Users className="w-5 h-5" />
                                 </div>
-
-                                <div>
-                                    <p className="text-3xl font-bold mb-1">{listings.length}</p>
-                                    <p className="text-sm font-medium text-green-800">{t('availableProducts')}</p>
-                                </div>
+                                <span className="text-xs text-blue-700 font-medium">NETWORK</span>
                             </div>
+                            <p className="text-3xl font-bold text-gray-800 mb-1">500+</p>
+                            <p className="text-sm text-gray-600">{t('localFarmers')}</p>
+                        </div>
 
-                            <div className="bg-gradient-to-r from-green-50 via-blue-10 to-yellow-300 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-lg text-center text-green-800">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="bg-white/20 p-2 rounded-lg">
-                                        <Users className="w-5 h-5" />
-                                    </div>
-                                    <span className="text-xs text-green-600 font-medium">NETWORK</span>
+                        <div className="bg-gradient-to-br from-amber-50 to-yellow-100 p-6 rounded-xl">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="bg-yellow-700 text-white p-2 rounded-lg">
+                                    <MapPin className="w-5 h-5" />
                                 </div>
-                                <div>
-                                    <p className="text-3xl font-bold mb-1">500+</p>
-                                    <p className="text-sm font-medium text-green-800">{t('localFarmers')}</p>
-                                </div>
+                                <span className="text-xs text-amber-1300 font-medium">COVERAGE</span>
                             </div>
-
-                            <div className="bg-gradient-to-r from-green-50 via-blue-10 to-yellow-300 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-lg text-center text-green-800">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="bg-white/20 p-2 rounded-lg">
-                                        <MapPin className="w-5 h-5" />
-                                    </div>
-                                    <span className="text-xs text-green-600 font-medium">COVERAGE</span>
-                                </div>
-                                <div>
-                                    <p className="text-3xl font-bold mb-1">50+</p>
-                                    <p className="text-sm font-medium text-green-800">{t('villagesConnected')}</p>
-                                </div>
-                            </div>
+                            <p className="text-3xl font-bold text-gray-800 mb-1">50+</p>
+                            <p className="text-sm text-gray-600">{t('villagesConnected')}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-4 py-8 ">
-                {/* Filters Section matching TransporterDashboard style */}
-                <div className="bg-gradient-to-r from-yellow-200 to-gray-50 rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+            <div className="max-w-6xl mx-auto px-4 py-12">
+                {/* Search Section */}
+                <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
                     <div className="flex items-center gap-4 mb-6">
-                        <div className="bg-green-200 p-3 rounded-xl">
-                            <Filter className="w-6 h-6 text-green-700" />
+                        <div className="p-3 bg-green-100 rounded-xl">
+                            <Filter className="w-6 h-6 text-green-600" />
                         </div>
                         <h2 className="text-2xl font-bold text-gray-800">{t('findFreshProducts')}</h2>
                     </div>
 
-                    <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-                        <div className="relative flex-1 max-w-md">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                             <input
                                 type="text"
                                 placeholder={t('searchByVillage')}
                                 value={filters.village}
                                 onChange={(e) => setFilters({ ...filters, village: e.target.value })}
-                                className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             />
                         </div>
-
-                        <div className="relative flex-1 max-w-md">
-                            <Package className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <div className="relative">
+                            <Package className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                             <input
                                 type="text"
                                 placeholder={t('filterByName')}
                                 value={filters.name}
                                 onChange={(e) => setFilters({ ...filters, name: e.target.value })}
-                                className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             />
                         </div>
-
-                        <div className="bg-green-100 rounded-xl p-2 flex items-center gap-1">
-                            <span className="text-sm text-gray-600">{t('found')}:</span>
-                            <span className="font-semibold text-green-800">{listings.length}</span>
+                        <div className="bg-green-100 rounded-xl p-2 flex items-center justify-between">
+                            <span className="text-gray-600">Found:</span>
+                            <span className="text-green-700 font-bold text-lg">{listings.length}</span>
                         </div>
                     </div>
                 </div>
@@ -425,10 +501,32 @@ export default function ProductListingList() {
                 )}
             </div>
 
-            {/* Footer Stats */}
-            <div className="bg-white border-t border-gray-200 py-4 px-4">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex items-center justify-between text-sm text-gray-600">
+            {/* Features Section - Like Help.jsx */}
+            {/* <div className="bg-gradient-to-r from-gray-50 to-gray-100 py-16 px-4">
+                <div className="max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6"> */}
+            {/*
+                            { icon: Shield, title: 'Verified Products', desc: '100% Quality Guarantee' },
+                            { icon: TrendingUp, title: 'Best Prices', desc: 'Direct from Farmers' },
+                            { icon: Truck, title: 'Fast Delivery', desc: 'Professional Transport' },
+                            { icon: Users, title: 'Large Network', desc: '500+ Farmers' }
+                        ].map((feature, i) => (
+                            <div key={i} className="bg-white rounded-xl p-6 text-center hover:shadow-xl transition-all">
+                                <div className="bg-green-100 w-12 h-12 mx-auto mb-4 rounded-xl flex items-center justify-center">
+                                    <feature.icon className="w-6 h-6 text-green-600" />
+                                </div>
+                                <h3 className="font-bold text-gray-800 mb-1">{feature.title}</h3>
+                                <p className="text-gray-600 text-sm">{feature.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Footer Stats - Keep existing but styled like Help.jsx */}
+            <div className="bg-white border-t border-gray-200 py-6">
+                <div className="max-w-6xl mx-auto px-4">
+                    <div className="flex flex-wrap items-center justify-between text-sm text-gray-600">
                         <div className="flex items-center gap-4">
                             <span>Fresh products updated daily</span>
                             <div className="flex items-center gap-2 text-green-600">
@@ -437,8 +535,8 @@ export default function ProductListingList() {
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
-                            <span>Products available: {listings.length}</span>
-                            <span>Farmers connected: 500+</span>
+                            <span>Available Products: {listings.length}</span>
+                            <span>Connected Farmers: 500+</span>
                         </div>
                     </div>
                 </div>

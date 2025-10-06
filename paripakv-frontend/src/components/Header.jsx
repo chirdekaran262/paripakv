@@ -32,7 +32,6 @@ export default function Header() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    if (loading) return null;
 
     return (
         <nav className="sticky top-0 z-50 bg-gradient-to-br from-green-500 via-lime-100 to-yellow-300 backdrop-blur-xl border-b border-red-200 shadow-xl">

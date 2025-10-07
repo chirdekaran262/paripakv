@@ -101,8 +101,8 @@ public class OrderService {
 
 
         try {
-            mailSender.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent);
-            mailSender.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent);
+            emailService.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent);
+            emailService.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent);
             System.out.println("Email sent successfully");
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,11 +142,13 @@ public class OrderService {
                         order.getId(),
                         quantity
                 );
+
                 emailService.sendEmail(
                         buyer.getEmail(),
                         "✅ Your Order Has Been Confirmed - Paripakv",
                         buyerEmailContent
                 );
+                System.out.println("Email sent successfully");
             } else {
                 throw new RuntimeException("Product listing not found for id: " + order.getListingId());
             }

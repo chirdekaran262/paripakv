@@ -99,10 +99,15 @@ public class OrderService {
         );
         System.out.println("Sending email to: " + farmer.getName());
 
-        emailService.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent);
-        emailService.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent);
 
-        System.out.println("Email sent successfully");
+        try {
+            mailSender.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent);
+            mailSender.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent);
+            System.out.println("Email sent successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Email sending failed: " + e.getMessage());
+        }
 
         return savedOrder;
     }

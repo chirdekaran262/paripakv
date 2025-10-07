@@ -170,8 +170,8 @@ export default function ProductListingList() {
             {/* Hero Section - Similar to Help.jsx */}
             <div className="bg-gradient-to-r from-green-600 to-emerald-700 text-white py-20 px-4">
                 <div className="max-w-6xl mx-auto text-center">
-                    <div className="flex items-center justify-center gap-3 mb-6">
-                        <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-sm">
+                    <div className="flex items-center justify-center gap-1 mb-6">
+                        <div className="p-1 bg-white/10 rounded-2xl backdrop-blur-sm">
                             <Leaf className="w-12 h-12" />
                         </div>
                         <h1 className="text-5xl font-bold">Fresh Farm Products</h1>

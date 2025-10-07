@@ -97,10 +97,12 @@ public class OrderService {
                 savedOrder.getId(),
                 BigDecimal.valueOf(savedOrder.getTotalPrice())
         );
+        System.out.println("Sending email to: " + farmer.getName());
 
-//        emailService.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent);
-//        emailService.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent);
+        emailService.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent);
+        emailService.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent);
 
+        System.out.println("Email sent successfully");
 
         return savedOrder;
     }

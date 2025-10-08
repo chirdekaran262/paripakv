@@ -104,9 +104,12 @@ public class OrderService {
             emailService.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent);
             emailService.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent);
             System.out.println("Email sent successfully");
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            System.out.println("❌ MessagingException: " + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Email sending failed: " + e.getMessage());
+            System.out.println("❌ General Exception: " + e.getMessage());
         }
 
         return savedOrder;

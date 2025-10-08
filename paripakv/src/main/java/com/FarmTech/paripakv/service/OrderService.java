@@ -100,8 +100,8 @@ public class OrderService {
 
 
         try {
-            emailService.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent,null);
-            emailService.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent,null);
+            emailService.sendEmail(farmer.getEmail(), "New Order Received - Paripakv", farmerEmailContent, null);
+            emailService.sendEmail(buyer.getEmail(), "Order Placed - Awaiting Farmer Confirmation", buyerEmailContent, null);
             System.out.println("Email sent successfully");
         }  catch (Exception e) {
             e.printStackTrace();
@@ -144,7 +144,7 @@ public class OrderService {
 
                 emailService.sendEmail(
                         buyer.getEmail(),
-                        "✅ Your Order Has Been Confirmed - Paripakv",
+                        "Your Order Has Been Confirmed - Paripakv",
                         buyerEmailContent,
                         null
                 );
@@ -157,7 +157,7 @@ public class OrderService {
             walletService.refund(order.getBuyerId(),order, BigDecimal.valueOf(order.getTotalPrice()),"Order Cancelled By Farmer");
             emailService.sendEmail(
                     buyer.getEmail(),
-                    "✅ Your Order Has Been Confirmed - Paripakv",
+                    "Your Order Has Been Confirmed - Paripakv",
                     "Sorry Your order has been cancelled by Farmer, your reserved amount is refund to to your account",
                     null
             );
@@ -335,7 +335,7 @@ public class OrderService {
                             "  <style>" +
                             "    body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }" +
                             "    .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }" +
-                            "    h2 { color: #2E7D32; margin-top: 0; }" +
+                            "    h2 { color: #2E7D32; margin-top: 0; font-size: 22px; }" +
                             "    p { font-size: 16px; color: #555; line-height: 1.6; }" +
                             "    .otp { font-size: 24px; font-weight: bold; color: #2E7D32; margin: 15px 0; }" +
                             "    .footer { font-size: 12px; color: #999; text-align: center; margin-top: 30px; }" +
@@ -348,7 +348,7 @@ public class OrderService {
                             "</head>" +
                             "<body>" +
                             "  <div class='container'>" +
-                            "    <h2>🔐 Delivery OTP</h2>" +
+                            "    <h2>Delivery OTP</h2>" +
                             "    <p>Hello,</p>" +
                             "    <p>Your delivery OTP is:</p>" +
                             "    <p class='otp'>" + otp + "</p>" +
@@ -360,7 +360,6 @@ public class OrderService {
                             "  </div>" +
                             "</body>" +
                             "</html>";
-
 
 
             emailService.sendEmail(users.getEmail(),"Delivery OTP - FarmTech Paripakv",htmlContent,null);

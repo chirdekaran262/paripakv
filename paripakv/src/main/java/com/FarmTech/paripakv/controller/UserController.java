@@ -82,7 +82,9 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody AuthRequest request) {
         var user = userService.loadUserByUsername(request.getEmail());
-
+        if(user==null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid email or password");
+        }
         if (!userService.passwordMatch(request.getPassword(), user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials"); // 401 Unauthorized
         }

@@ -44,7 +44,6 @@ public class OrderService {
     private final String uploadDir = "uploads/proofs/";
     private final EmailService emailService;
     private final InvoiceGenerator invoiceGenerator;
-    private final JavaMailSender mailSender;
 
     private final Cloudinary cloudinary;
 
@@ -101,13 +100,10 @@ public class OrderService {
 
 
         try {
-            emailService.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent);
-            emailService.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent);
+            emailService.sendEmail(farmer.getEmail(), "🛒 New Order Received - Paripakv", farmerEmailContent,null);
+            emailService.sendEmail(buyer.getEmail(), "⏳ Order Placed - Waiting for Farmer Confirmation", buyerEmailContent,null);
             System.out.println("Email sent successfully");
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            System.out.println("❌ MessagingException: " + e.getMessage());
-        } catch (Exception e) {
+        }  catch (Exception e) {
             e.printStackTrace();
             System.out.println("❌ General Exception: " + e.getMessage());
         }
@@ -124,7 +120,7 @@ public class OrderService {
         return repo.findAll();
     }
 
-    public Order updateStatus(UUID id, OrderStatus status, double quantity) throws MessagingException, UserNotFoundException {
+    public Order updateStatus(UUID id, OrderStatus status, double quantity) throws MessagingException, UserNotFoundException, IOException {
 
         Order order = repo.findById(id).orElseThrow();
         Users buyer = userRepo.findById(order.getBuyerId())
@@ -149,7 +145,8 @@ public class OrderService {
                 emailService.sendEmail(
                         buyer.getEmail(),
                         "✅ Your Order Has Been Confirmed - Paripakv",
-                        buyerEmailContent
+                        buyerEmailContent,
+                        null
                 );
                 System.out.println("Email sent successfully");
             } else {
@@ -161,7 +158,8 @@ public class OrderService {
             emailService.sendEmail(
                     buyer.getEmail(),
                     "✅ Your Order Has Been Confirmed - Paripakv",
-                    "Sorry Your order has been cancelled by Farmer, your reserved amount is refund to to your account"
+                    "Sorry Your order has been cancelled by Farmer, your reserved amount is refund to to your account",
+                    null
             );
         }
         order.setStatus(status);
@@ -181,7 +179,7 @@ public class OrderService {
     public List<Order> getAvailableOrdersForPickup() {
         return repo.findByStatusAndTransporterIdIsNull(OrderStatus.CONFIRMED);
     }
-    public void pickupOrder(UUID orderId, UUID transporterId) throws MessagingException {
+    public void pickupOrder(UUID orderId, UUID transporterId) throws MessagingException, IOException {
         Order order = repo.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
@@ -219,7 +217,7 @@ public class OrderService {
         emailService.sendEmail(
                 buyer.getEmail(),
                 "📦 Your Order Has Been Picked Up",
-                buyerEmailContent
+                buyerEmailContent,null
         );
 
         // Send email to farmer
@@ -233,7 +231,8 @@ public class OrderService {
         emailService.sendEmail(
                 farmer.getEmail(),
                 "📦 Your Produce Has Been Picked Up",
-                farmerEmailContent
+                farmerEmailContent,
+                null
         );
     }
 
@@ -272,11 +271,7 @@ public class OrderService {
                 .orElseThrow(() -> new RuntimeException("Transporter not found"));
 
         // Prepare the email
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        helper.setTo(farmer.getEmail());
-        helper.setSubject("Pickup Confirmation - Order " + order.getId());
 
         // Load the HTML template from resources
         ClassPathResource resource = new ClassPathResource("templates/pickup-confirmation.html");
@@ -295,9 +290,7 @@ public class OrderService {
                                 ? order.getPickupTime().toString()
                                 : "Not Specified");
 
-        // Send HTML email
-        helper.setText(htmlTemplate, true);
-        mailSender.send(message);
+        emailService.sendEmail(farmer.getEmail(),"Pickup Confirmation - Order " + order.getId(),htmlTemplate,null);
 
         // Update order status
         order.setDeliveryStatus(DeliveryStatus.IN_TRANSIT);
@@ -331,8 +324,7 @@ public class OrderService {
             order.setOtpCode(otp);
             order.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
 
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
+
 
             String htmlContent =
                     "<!DOCTYPE html>" +
@@ -369,12 +361,9 @@ public class OrderService {
                             "</body>" +
                             "</html>";
 
-            helper.setTo(users.getEmail());
-            helper.setSubject("Delivery OTP - FarmTech Paripakv");
-            helper.setText(htmlContent, true);
-            // true = HTML
 
-            mailSender.send(mimeMessage);
+
+            emailService.sendEmail(users.getEmail(),"Delivery OTP - FarmTech Paripakv",htmlContent,null);
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                     ObjectUtils.asMap("folder", "proofs/"));
             order.setProofImageUrl(uploadResult.get("secure_url").toString());
@@ -421,15 +410,10 @@ public class OrderService {
 
 
         try {
-            // 1. Generate PDF invoice and get file path
-            String invoicePath = invoiceGenerator.generateInvoice(order);
+             String invoicePath = invoiceGenerator.generateInvoice(order);
 
-            // 2. Create MIME message for email with attachment
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
-            helper.setTo(users.getEmail());
-            helper.setSubject("✅ Your Order Has Been Delivered - Paripakv Invoice");
+
 
             String htmlContent =
                     "<!DOCTYPE html>" +
@@ -467,16 +451,13 @@ public class OrderService {
                             "</body>" +
                             "</html>";
 
-            helper.setText(htmlContent, true);
 
 
 
-            helper.setText(htmlContent, true);  // Set HTML email body
 
             File invoiceFile = new File(invoicePath);
-            helper.addAttachment("Invoice.pdf", invoiceFile);
 
-            mailSender.send(mimeMessage);
+            emailService.sendEmail(users.getEmail(),"✅ Your Order Has Been Delivered - Paripakv Invoice",htmlContent,invoiceFile);
             walletService.transferAfterOtp(order);
             System.out.println("Delivery confirmation email sent to " + users.getEmail());
         } catch (Exception e) {

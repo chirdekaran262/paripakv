@@ -116,7 +116,7 @@ public class UserService implements UserDetailsService {
 
 
         // ✅ Send the mail
-        emailService.sendEmail(savedUser.getEmail(), subject, message);
+        emailService.sendEmail(savedUser.getEmail(), subject, message,null);
 
         return savedUser;
     }
@@ -173,7 +173,7 @@ public class UserService implements UserDetailsService {
 
         repo.save(user);
     }
-    public void initiatePasswordReset(String email) throws MessagingException {
+    public void initiatePasswordReset(String email) throws MessagingException, IOException {
         Users user = repo.findByEmail(email);
 
         if (user == null) {
@@ -236,7 +236,7 @@ public class UserService implements UserDetailsService {
                 "</html>";
 
 
-        emailService.sendEmail(user.getEmail(), subject, message);
+        emailService.sendEmail(user.getEmail(), subject, message,null);
 
     }
 

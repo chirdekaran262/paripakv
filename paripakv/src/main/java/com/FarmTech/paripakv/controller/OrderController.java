@@ -71,6 +71,8 @@ public class OrderController {
             return ResponseEntity.badRequest().body("Invalid status value."); // 400 Bad Request
         } catch (MessagingException | UserNotFoundException e) {
             throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -115,7 +117,7 @@ public class OrderController {
     public ResponseEntity<String> pickupOrder(
             @PathVariable UUID orderId,
             @RequestParam UUID transporterId
-    ) throws MessagingException {
+    ) throws MessagingException, IOException {
         service.pickupOrder(orderId, transporterId);
         return ResponseEntity.ok("Order picked up");
     }

@@ -131,6 +131,17 @@ public class OrderService {
             Optional<ProductListing> productListingOpt = productListingRepo.findById(order.getListingId());
             if (productListingOpt.isPresent()) {
                 ProductListing productListing = productListingOpt.get();
+                if(productListing.getQuantityKg()<quantity){
+                    walletService.refund(order.getBuyerId(),order, BigDecimal.valueOf(order.getTotalPrice()),"Order Cancelled By Farmer");
+                    emailService.sendEmail(
+                            buyer.getEmail(),
+                            "Your Order Has Been Confirmed - Paripakv",
+                            "Sorry Your order has been cancelled by Farmer, your reserved amount is refund to to your account",
+                            null
+                    );
+                    order.setStatus(OrderStatus.CANCELLED);
+                    return repo.save(order);
+                }
                 productListing.setQuantityKg(productListing.getQuantityKg() - quantity);
                 productListingRepo.save(productListing);
 

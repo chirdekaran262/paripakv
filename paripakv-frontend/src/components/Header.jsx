@@ -134,7 +134,7 @@ export default function Header() {
                                     </div>
 
                                     {/* Notifications Button */}
-                                    <button
+                                    {/* <button
                                         onClick={() => setShowNotifications(!showNotifications)}
                                         className="relative p-3 bg-blue-50 rounded-full hover:bg-white/40 transition-all duration-200 group"
                                     >
@@ -142,7 +142,7 @@ export default function Header() {
                                         <span className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-red-500 to-red-600 rounded-full border-2 border-white shadow-lg animate-pulse flex items-center justify-center">
                                             <span className="w-2 h-2 bg-white rounded-full"></span>
                                         </span>
-                                    </button>
+                                    </button> */}
                                 </>
                             )}
 
@@ -210,6 +210,22 @@ export default function Header() {
                                                         </span>
                                                     </div>
                                                 </Link>
+                                                {/* <button
+                                                    onClick={() => {
+                                                        setShowNotifications(!showNotifications);
+                                                        setShowDropdown(false);
+                                                    }}
+                                                    className="w-full flex items-center space-x-3 px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-150"
+                                                >
+                                                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center relative">
+                                                        <Bell className="w-5 h-5 text-blue-600" />
+                                                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium">Notifications</span>
+                                                        <span className="text-xs text-gray-500">View updates</span>
+                                                    </div>
+                                                </button> */}
                                                 <Link
                                                     to="/profile"
                                                     className="flex items-center space-x-3 px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all duration-150"
@@ -285,18 +301,18 @@ export default function Header() {
                             <X className="w-6 h-6 text-gray-600" />
                         </button>
                     </div>
-                    <Link
-                        to="/help"
-                        className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-xl text-center font-semibold shadow-md"
-                        onClick={() => setMenuOpen(false)}
-                    >
-                        <div className="flex items-center justify-center space-x-2">
-                            <Info className="w-4 h-4" />
-                            <span>How It Works</span>
-                        </div>
-                    </Link>
-                    <div className="px-6 py-6 space-y-4">
 
+                    <div className="px-6 py-6 space-y-4">
+                        <Link
+                            to="/help"
+                            className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-4 rounded-xl text-center font-semibold shadow-md"
+                            onClick={() => setMenuOpen(false)}
+                        >
+                            <div className="flex items-center justify-center space-x-2">
+                                <Info className="w-4 h-4" />
+                                <span>How It Works</span>
+                            </div>
+                        </Link>
                         {isAuthenticated ? (
                             <>
                                 {/* User Info */}
@@ -386,7 +402,7 @@ export default function Header() {
                                             setShowNotifications(!showNotifications);
                                             setMenuOpen(false);
                                         }}
-                                        className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition-all duration-200"
+                                        className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl text-green-700 hover:bg-emerald-50 hover:text-emerald-600 transition-all duration-200"
                                     >
                                         <Bell className="w-5 h-5" />
                                         <span className="font-medium">Notifications</span>
@@ -401,21 +417,48 @@ export default function Header() {
                                 {/* Profile Actions */}
                                 <div className="border-t border-gray-200 pt-4 space-y-2">
                                     <Link
-                                        to="/profile"
-                                        className="flex items-center space-x-3 px-4 py-3 rounded-xl bg-green-100 text-gray-700 hover:bg-green-300 hover:text-green-600 transition-all duration-200"
+                                        to="/wallet"
+                                        className="flex items-center space-x-3 px-4 py-3 rounded-xl bg-purple-50 text-gray-700 hover:bg-purple-100 hover:text-purple-600 transition-all duration-200"
                                         onClick={() => setMenuOpen(false)}
                                     >
-                                        <User className="w-5 h-5" />
+                                        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                            <Wallet className="w-5 h-5 text-purple-600" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">My Wallet</span>
+                                            <span className="text-xs text-gray-500">Manage your funds</span>
+                                        </div>
+                                    </Link>
+                                    <Link
+                                        to="/profile"
+                                        className="flex items-center space-x-3 px-4 py-3 rounded-xl bg-green-50 text-gray-700 hover:bg-green-100 hover:text-green-600 transition-all duration-200"
+                                        onClick={() => setMenuOpen(false)}
+                                    >
+                                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                            <User className="w-5 h-5 text-green-600" />
+                                        </div>
                                         <span className="font-medium">My Profile</span>
+                                    </Link>
+                                    <Link
+                                        to="/settings"
+                                        className="flex items-center space-x-3 px-4 py-3 rounded-xl bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-600 transition-all duration-200"
+                                        onClick={() => setMenuOpen(false)}
+                                    >
+                                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                                            <Settings className="w-5 h-5 text-gray-600" />
+                                        </div>
+                                        <span className="font-medium">Settings</span>
                                     </Link>
                                     <button
                                         onClick={() => {
                                             setMenuOpen(false);
                                             handleLogout();
                                         }}
-                                        className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200"
+                                        className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-all duration-200"
                                     >
-                                        <span className="text-lg">🚪</span>
+                                        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                            <span className="text-lg">🚪</span>
+                                        </div>
                                         <span className="font-medium">Logout</span>
                                     </button>
                                 </div>
